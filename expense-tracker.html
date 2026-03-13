@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldFrame · Expense Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   GOLDFRAME · EXPENSE TRACKER
+   GoldFrame Agency Suite © 2026
+   Single-file, zero-dependency
+═══════════════════════════════════════════════ */
+:root {
+  --gold-1: #fcf6ba;
+  --gold-2: #e8c84a;
+  --gold-3: #d4af37;
+  --gold-4: #aa771c;
+  --gold-5: #7a5210;
+  --gold-grad: linear-gradient(135deg, var(--gold-5) 0%, var(--gold-1) 38%, var(--gold-3) 62%, var(--gold-5) 100%);
+  --gold-glow: rgba(212,175,55,.22);
+  --bg: #09090d;
+  --bg2: #0e0e16;
+  --glass: rgba(12,12,20,.75);
+  --border: rgba(212,175,55,.28);
+  --border2: rgba(212,175,55,.5);
+  --text: #f0ece0;
+  --muted: #b0aca4;
+  --label: #a09880;
+  --dim: #5a5650;
+  --red: #ff5a5a;
+  --grn: #4ade80;
+  --r: 14px; --r2: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+
+/* STARFIELD */
+#starfield{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 40% 20%,#16142a 0%,#09090d 65%);}
+#starfield canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* LAYOUT */
+.wrap{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.brand{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.25em;background:var(--gold-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;}
+.topbar-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.tb-btn{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;cursor:pointer;letter-spacing:.04em;transition:all .18s;}
+.tb-export{background:var(--gold-grad);color:#000;border:none;}
+.tb-export:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.tb-import{background:transparent;color:var(--gold-2);border:1.5px solid var(--border2);}
+.tb-import:hover{background:rgba(212,175,55,.1);}
+.tb-clear{background:transparent;color:var(--muted);border:1.5px solid var(--dim);}
+.tb-clear:hover{border-color:var(--red);color:var(--red);}
+
+/* CARDS */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s;}
+.card:focus-within{border-color:var(--border2);}
+.card-title{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--gold-3);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.dash-tile{background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:var(--r2);padding:16px 18px;}
+.dash-tile.highlight{border-color:var(--gold-3);}
+.dash-val{font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:500;color:var(--gold-2);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dash-tile.highlight .dash-val{color:var(--gold-1);}
+.dash-lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;}
+
+/* CATEGORY BREAKDOWN */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px;}
+.cat-tile{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:var(--r2);padding:12px 14px;display:flex;justify-content:space-between;align-items:center;}
+.cat-name{font-size:12px;color:var(--label);}
+.cat-amt{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold-2);}
+.cat-bar-wrap{margin-top:6px;height:3px;background:var(--dim);border-radius:2px;overflow:hidden;}
+.cat-bar{height:100%;background:var(--gold-grad);border-radius:2px;transition:width .4s ease;}
+
+/* ADD EXPENSE FORM */
+.add-form{display:grid;grid-template-columns:1fr 1fr 120px 140px auto;gap:10px;align-items:end;}
+.field{display:flex;flex-direction:column;gap:5px;}
+label{font-size:12px;letter-spacing:.08em;color:var(--label);text-transform:uppercase;font-weight:600;}
+input[type=text],input[type=number],input[type=date],select{background:rgba(0,0,0,.45);border:1px solid var(--border);color:var(--text);padding:10px 13px;font-size:14px;font-family:'Outfit',sans-serif;border-radius:var(--r2);width:100%;transition:border-color .15s,box-shadow .15s;}
+input:focus,select:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 0 3px rgba(212,175,55,.12);}
+input::placeholder{color:#6a6660;}
+select option{background:#1a1a26;color:var(--text);}
+.btn-add{background:var(--gold-grad);color:#000;border:none;padding:10px 20px;border-radius:var(--r2);cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;white-space:nowrap;transition:filter .15s,transform .1s;height:42px;}
+.btn-add:hover{filter:brightness(1.08);transform:translateY(-1px);}
+
+/* FILTERS */
+.filters{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.filter-select{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:7px 12px;font-size:13px;font-family:'Outfit',sans-serif;border-radius:20px;cursor:pointer;}
+.filter-select:focus{outline:none;border-color:var(--gold-3);}
+.search-input{background:rgba(0,0,0,.4);border:1px solid var(--border);color:var(--text);padding:7px 14px;font-size:13px;font-family:'Outfit',sans-serif;border-radius:20px;flex:1;min-width:160px;}
+.search-input:focus{outline:none;border-color:var(--gold-3);}
+.search-input::placeholder{color:#6a6660;}
+.filter-count{font-size:12px;color:var(--muted);margin-left:auto;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--dim);text-align:left;white-space:nowrap;cursor:pointer;user-select:none;}
+thead th:hover{color:var(--gold-2);}
+thead th .sort-arrow{margin-left:4px;opacity:.4;}
+thead th.sorted .sort-arrow{opacity:1;color:var(--gold-2);}
+tbody tr{border-bottom:1px solid rgba(212,175,55,.06);transition:background .12s;animation:rowIn .18s ease;}
+@keyframes rowIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+tbody tr:hover{background:rgba(212,175,55,.04);}
+tbody td{padding:10px 12px;font-size:13px;vertical-align:middle;}
+.td-desc{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.td-amt{font-family:'DM Mono',monospace;color:var(--gold-2);white-space:nowrap;}
+.td-tax{font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);}
+.cat-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600;background:rgba(212,175,55,.1);color:var(--gold-2);border:1px solid rgba(212,175,55,.2);}
+.del-btn{background:transparent;border:1px solid var(--dim);color:var(--muted);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:13px;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;}
+.del-btn:hover{border-color:var(--red);color:var(--red);background:rgba(255,90,90,.08);}
+.empty-row td{text-align:center;padding:40px;color:var(--muted);font-size:14px;}
+
+/* YEAR FILTER TABS */
+.year-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;}
+.year-tab{background:transparent;border:1px solid var(--dim);color:var(--muted);padding:4px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-family:'Outfit',sans-serif;font-weight:600;transition:all .15s;}
+.year-tab.active{background:rgba(212,175,55,.12);border-color:var(--gold-3);color:var(--gold-2);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--glass);border:1px solid var(--border2);padding:12px 24px;border-radius:40px;font-size:14px;font-weight:500;backdrop-filter:blur(20px);z-index:200;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* PRINT */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; color: #1a1a1a !important; font-family: 'Outfit', Arial, sans-serif !important; }
+  #starfield,.no-print,.topbar,.del-btn,.add-form,.filters,.year-tabs,.toast { display: none !important; }
+  .wrap { max-width: 100% !important; padding: 20px !important; }
+  h1, .brand { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; background: none !important; }
+  .card { background: #fff !important; border: none !important; border-left: 3px solid #d4af37 !important;
+    box-shadow: none !important; backdrop-filter: none !important;
+    break-inside: avoid; margin-bottom: 16px !important; padding: 16px 20px !important; }
+  .card-title { color: #d4af37 !important; font-size:12px !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
+  .stat-card { background: #fafafa !important; border: 1px solid #e5e5e5 !important; border-top: 3px solid #d4af37 !important;
+    box-shadow: none !important; break-inside: avoid; padding: 16px !important; }
+  .stat-val { color: #d4af37 !important; font-weight: 700 !important; font-size: 22px !important; }
+  .stat-label { color: #888 !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+  .exp-row { border-bottom: 1px solid #f0f0f0 !important; }
+  .exp-amount { color: #1a1a1a !important; font-weight: 600 !important; }
+  .exp-cat { color: #d4af37 !important; font-size: 12px !important; }
+  .month-header { background: #fafafa !important; border-left: 3px solid #d4af37 !important;
+    color: #1a1a1a !important; font-weight: 600 !important; padding: 8px 12px !important; }
+  table { width: 100% !important; border-collapse: collapse !important; }
+  th { border-bottom: 2px solid #d4af37 !important; color: #888 !important; font-size: 12px !important;
+    text-transform: uppercase !important; letter-spacing: 1px !important; padding: 8px !important; }
+  td { border-bottom: 1px solid #f0f0f0 !important; padding: 8px !important; color: #1a1a1a !important; }
+}
+@media(max-width:700px){
+  .dash-grid{grid-template-columns:1fr 1fr;}
+  .add-form{grid-template-columns:1fr 1fr;}
+  .add-form .btn-add{grid-column:1/-1;}
+}
+@media(max-width:480px){
+  .dash-grid{grid-template-columns:1fr;}
+  .add-form{grid-template-columns:1fr;}
+}
+
+/* ── GOLDFRAME WATERMARK ── */
+@media print {
+  body.gf-locked::before {
+    content: "GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com";
+    position: fixed;
+    top: 38%;
+    left: -20%;
+    width: 140%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(180,180,180,0.18) !important;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    transform: rotate(-35deg);
+    z-index: 99999;
+    pointer-events: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  body.gf-locked::after {
+    content: "GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com";
+    position: fixed;
+    top: 62%;
+    left: -20%;
+    width: 140%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(180,180,180,0.18) !important;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    transform: rotate(-35deg);
+    z-index: 99999;
+    pointer-events: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="starfield"><canvas id="sc"></canvas></div>
+<div class="toast" id="toast"></div>
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar no-print">
+    <div class="brand">GoldFrame · Expense Tracker</div>
+    <div class="topbar-actions">
+      <label class="tb-btn tb-import" style="cursor:pointer;">
+        📂 Import CSV
+        <input type="file" id="csvImport" accept=".csv" style="display:none" onchange="importCSV(event)">
+      </label>
+      <button class="tb-btn tb-export" onclick="exportCSV()">📥 Export CSV</button>
+      <button class="tb-btn tb-clear" onclick="clearAll()">🗑 Clear All</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="dash-grid" id="dashGrid">
+    <div class="dash-tile highlight">
+      <div class="dash-val" id="dTotal">$0.00</div>
+      <div class="dash-lbl">Total Expenses</div>
+    </div>
+    <div class="dash-tile">
+      <div class="dash-val" id="dTax">$0.00</div>
+      <div class="dash-lbl">Tax Paid</div>
+    </div>
+    <div class="dash-tile">
+      <div class="dash-val" id="dCount">0</div>
+      <div class="dash-lbl">Transactions</div>
+    </div>
+    <div class="dash-tile">
+      <div class="dash-val" id="dAvg">$0.00</div>
+      <div class="dash-lbl">Avg per Item</div>
+    </div>
+  </div>
+
+  <!-- CATEGORY BREAKDOWN -->
+  <div class="card">
+    <div class="card-title">Spending by Category</div>
+    <div class="cat-grid" id="catGrid"></div>
+  </div>
+
+  <!-- ADD EXPENSE -->
+  <div class="card">
+    <div class="card-title">Add Expense</div>
+    <div class="add-form">
+      <div class="field">
+        <label>Description</label>
+        <input type="text" id="newDesc" placeholder="Adobe Creative Cloud" onkeydown="if(event.key==='Enter')addExpense()">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <select id="newCat">
+          <option>Software</option>
+          <option>Hardware</option>
+          <option>Travel</option>
+          <option>Marketing</option>
+          <option>Office</option>
+          <option>Professional Services</option>
+          <option>Education</option>
+          <option>Meals & Entertainment</option>
+          <option>Subscriptions</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Amount</label>
+        <input type="number" id="newAmt" placeholder="0.00" min="0" step="0.01" style="text-align:right;" onkeydown="if(event.key==='Enter')addExpense()">
+      </div>
+      <div class="field">
+        <label>Date</label>
+        <input type="date" id="newDate">
+      </div>
+      <button class="btn-add" onclick="addExpense()">+ Add</button>
+    </div>
+    <!-- Tax row -->
+    <div style="display:grid;grid-template-columns:1fr 120px 120px 1fr;gap:10px;margin-top:10px;align-items:end;">
+      <div class="field">
+        <label>Notes (optional)</label>
+        <input type="text" id="newNotes" placeholder="Client reimbursable, receipt #123...">
+      </div>
+      <div class="field">
+        <label>Tax Amount</label>
+        <input type="number" id="newTax" placeholder="0.00" min="0" step="0.01" style="text-align:right;">
+      </div>
+      <div class="field">
+        <label>Currency</label>
+        <select id="currencySel" onchange="updateCurrency()">
+          <option value="$">USD $</option>
+          <option value="€">EUR €</option>
+          <option value="£">GBP £</option>
+          <option value="₹">INR ₹</option>
+          <option value="AED">AED</option>
+          <option value="A$">AUD A$</option>
+          <option value="C$">CAD C$</option>
+          <option value="S$">SGD S$</option>
+          <option value="¥">JPY ¥</option>
+          <option value="RM">MYR RM</option>
+          <option value="R$">BRL R$</option>
+          <option value="₦">NGN ₦</option>
+          <option value="R">ZAR R</option>
+        </select>
+      </div>
+      <div></div>
+    </div>
+  </div>
+
+  <!-- EXPENSE TABLE -->
+  <div class="card">
+    <div class="card-title">Expense Log</div>
+
+    <!-- Year tabs -->
+    <div class="year-tabs no-print" id="yearTabs"></div>
+
+    <!-- Filters -->
+    <div class="filters no-print">
+      <input class="search-input" id="searchInput" type="text" placeholder="🔍 Search expenses..." oninput="renderTable()">
+      <select class="filter-select" id="filterCat" onchange="renderTable()">
+        <option value="">All Categories</option>
+        <option>Software</option><option>Hardware</option><option>Travel</option>
+        <option>Marketing</option><option>Office</option><option>Professional Services</option>
+        <option>Education</option><option>Meals & Entertainment</option>
+        <option>Subscriptions</option><option>Other</option>
+      </select>
+      <select class="filter-select" id="filterMonth" onchange="renderTable()">
+        <option value="">All Months</option>
+        <option value="01">January</option><option value="02">February</option>
+        <option value="03">March</option><option value="04">April</option>
+        <option value="05">May</option><option value="06">June</option>
+        <option value="07">July</option><option value="08">August</option>
+        <option value="09">September</option><option value="10">October</option>
+        <option value="11">November</option><option value="12">December</option>
+      </select>
+      <span class="filter-count" id="filterCount"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('date')" id="th-date">Date <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('desc')" id="th-desc">Description <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('cat')" id="th-cat">Category <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('notes')" id="th-notes">Notes <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('tax')" id="th-tax">Tax <span class="sort-arrow">↕</span></th>
+            <th onclick="sortBy('amt')" id="th-amt" class="sorted">Amount <span class="sort-arrow">↓</span></th>
+            <th class="no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="expenseBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <button class="btn-add no-print" style="width:100%;margin-top:8px;padding:14px;font-size:14px;" onclick="window.print()">🖨 Print / Export PDF Report</button>
+
+</div>
+
+<script>
+/* ══════════════════════════════
+   STARFIELD
+══════════════════════════════ */
+(function(){
+  const c=document.getElementById('sc'),ctx=c.getContext('2d');
+  let W,H,stars=[],rafId=null,t=0;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function init(){stars=[];for(let i=0;i<Math.floor(W*H/4000);i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,o:Math.random()*.5+.1,s:Math.random()*.012+.004,ph:Math.random()*Math.PI*2});}
+  function draw(){if(document.hidden){rafId=null;return;}ctx.clearRect(0,0,W,H);t+=.01;stars.forEach(s=>{const op=s.o*(.5+.5*Math.sin(t*s.s*60+s.ph));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,240,180,${op})`;ctx.fill();});rafId=requestAnimationFrame(draw);}
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!rafId)draw();});
+  window.addEventListener('resize',()=>{resize();init();});
+  resize();init();draw();
+})();
+
+/* ══════════════════════════════
+   STATE
+══════════════════════════════ */
+let expenses = [];
+let curSym = '$';
+let sortField = 'date';
+let sortDir = -1; // -1 = desc, 1 = asc
+let activeYear = 'all';
+
+/* ══════════════════════════════
+   INIT
+══════════════════════════════ */
+(function init(){
+  const today = new Date();
+  document.getElementById('newDate').value = fmtDate(today);
+  load();
+  renderAll();
+})();
+
+function fmtDate(d){ return d.toISOString().split('T')[0]; }
+function updateCurrency(){ curSym = document.getElementById('currencySel').value; renderAll(); }
+
+/* ══════════════════════════════
+   CRUD
+══════════════════════════════ */
+function addExpense(){
+  const desc  = document.getElementById('newDesc').value.trim();
+  const cat   = document.getElementById('newCat').value;
+  const amt   = parseFloat(document.getElementById('newAmt').value);
+  const date  = document.getElementById('newDate').value;
+  const notes = document.getElementById('newNotes').value.trim();
+  const tax   = parseFloat(document.getElementById('newTax').value) || 0;
+
+  if(!desc || isNaN(amt) || amt < 0 || !date){
+    toast('Please fill in description, amount, and date.','⚠️'); return;
+  }
+
+  expenses.push({ id: Date.now(), desc, cat, amt, date, notes, tax });
+  document.getElementById('newDesc').value  = '';
+  document.getElementById('newAmt').value   = '';
+  document.getElementById('newNotes').value = '';
+  document.getElementById('newTax').value   = '';
+  document.getElementById('newDesc').focus();
+  save();
+  renderAll();
+  toast('Expense added ✓','');
+}
+
+function deleteExpense(id){
+  expenses = expenses.filter(e => e.id !== id);
+  save();
+  renderAll();
+}
+
+/* ══════════════════════════════
+   PERSIST
+══════════════════════════════ */
+function save(){
+  try{ localStorage.setItem('gf_expenses', JSON.stringify({expenses, curSym})); }
+  catch(e){ toast('Storage full — please export CSV to save your data.','⚠️'); }
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem('gf_expenses');
+    if(raw){ const d = JSON.parse(raw); expenses = d.expenses||[]; curSym = d.curSym||'$';
+      document.getElementById('currencySel').value = curSym;
+    }
+  }catch(e){}
+}
+
+/* ══════════════════════════════
+   FILTERED DATA
+══════════════════════════════ */
+function getFiltered(){
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const cat    = document.getElementById('filterCat').value;
+  const month  = document.getElementById('filterMonth').value;
+
+  return expenses.filter(e => {
+    if(activeYear !== 'all' && !e.date.startsWith(activeYear)) return false;
+    if(cat && e.cat !== cat) return false;
+    if(month && !e.date.slice(5,7).startsWith(month)) return false;
+    if(search && !e.desc.toLowerCase().includes(search) && !e.notes.toLowerCase().includes(search) && !e.cat.toLowerCase().includes(search)) return false;
+    return true;
+  }).sort((a,b)=>{
+    let av = a[sortField==='amt'?'amt':sortField==='tax'?'tax':sortField==='date'?'date':sortField==='desc'?'desc':sortField==='cat'?'cat':'notes'];
+    let bv = b[sortField==='amt'?'amt':sortField==='tax'?'tax':sortField==='date'?'date':sortField==='desc'?'desc':sortField==='cat'?'cat':'notes'];
+    if(sortField==='amt'||sortField==='tax') return (bv-av)*sortDir*-1;
+    return String(av).localeCompare(String(bv)) * sortDir;
+  });
+}
+
+/* ══════════════════════════════
+   RENDER ALL
+══════════════════════════════ */
+function renderAll(){
+  renderYearTabs();
+  renderDashboard();
+  renderCategories();
+  renderTable();
+}
+
+/* ══════════════════════════════
+   YEAR TABS
+══════════════════════════════ */
+function renderYearTabs(){
+  const years = [...new Set(expenses.map(e=>e.date.slice(0,4)))].sort().reverse();
+  const el = document.getElementById('yearTabs');
+  if(years.length === 0){ el.innerHTML=''; return; }
+  el.innerHTML = ['all',...years].map(y=>`
+    <button class="year-tab ${activeYear===y?'active':''}" onclick="setYear('${y}')">
+      ${y==='all'?'All Years':y}
+    </button>
+  `).join('');
+}
+function setYear(y){ activeYear=y; renderAll(); }
+
+/* ══════════════════════════════
+   DASHBOARD
+══════════════════════════════ */
+function renderDashboard(){
+  const filtered = getFiltered();
+  const total  = filtered.reduce((s,e)=>s+e.amt,0);
+  const tax    = filtered.reduce((s,e)=>s+e.tax,0);
+  const avg    = filtered.length ? total/filtered.length : 0;
+  document.getElementById('dTotal').textContent = curSym + fmtNum(total);
+  document.getElementById('dTax').textContent   = curSym + fmtNum(tax);
+  document.getElementById('dCount').textContent = filtered.length;
+  document.getElementById('dAvg').textContent   = curSym + fmtNum(avg);
+}
+
+/* ══════════════════════════════
+   CATEGORY BREAKDOWN
+══════════════════════════════ */
+const CAT_COLORS = {
+  'Software':'#60a5fa','Hardware':'#f472b6','Travel':'#34d399',
+  'Marketing':'#fb923c','Office':'#a78bfa','Professional Services':'#facc15',
+  'Education':'#4ade80','Meals & Entertainment':'#f87171',
+  'Subscriptions':'#38bdf8','Other':'#94a3b8'
+};
+
+function renderCategories(){
+  const filtered = getFiltered();
+  const total = filtered.reduce((s,e)=>s+e.amt,0);
+  const bycat = {};
+  filtered.forEach(e=>{bycat[e.cat]=(bycat[e.cat]||0)+e.amt;});
+  const sorted = Object.entries(bycat).sort((a,b)=>b[1]-a[1]);
+
+  const el = document.getElementById('catGrid');
+  if(sorted.length===0){ el.innerHTML='<div style="color:var(--muted);font-size:13px;">No expenses yet.</div>'; return; }
+
+  el.innerHTML = sorted.map(([cat,amt])=>{
+    const pct = total ? (amt/total*100).toFixed(0) : 0;
+    const col = CAT_COLORS[cat]||'#94a3b8';
+    return `
+      <div class="cat-tile" style="flex-direction:column;align-items:flex-start;">
+        <div style="display:flex;justify-content:space-between;width:100%;">
+          <span class="cat-name">${cat}</span>
+          <span class="cat-amt">${curSym}${fmtNum(amt)}</span>
+        </div>
+        <div class="cat-bar-wrap" style="width:100%">
+          <div class="cat-bar" style="width:${pct}%;background:${col};"></div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">${pct}% of total</div>
+      </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════
+   TABLE
+══════════════════════════════ */
+function renderTable(){
+  const filtered = getFiltered();
+  const tbody = document.getElementById('expenseBody');
+  document.getElementById('filterCount').textContent = filtered.length + ' expense' + (filtered.length!==1?'s':'');
+
+  if(filtered.length===0){
+    tbody.innerHTML='<tr class="empty-row"><td colspan="7">No expenses found. Add one above ↑</td></tr>';
+    renderDashboard(); renderCategories(); return;
+  }
+
+  tbody.innerHTML = filtered.map(e=>`
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);">${e.date}</td>
+      <td class="td-desc" title="${escHtml(e.desc)}">${escHtml(e.desc)}</td>
+      <td><span class="cat-badge" style="color:${CAT_COLORS[e.cat]||'#94a3b8'};background:${CAT_COLORS[e.cat]||'#94a3b8'}18;border-color:${CAT_COLORS[e.cat]||'#94a3b8'}44">${e.cat}</span></td>
+      <td style="font-size:12px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escHtml(e.notes||'')}">${escHtml(e.notes||'—')}</td>
+      <td class="td-tax">${e.tax>0?curSym+fmtNum(e.tax):'—'}</td>
+      <td class="td-amt">${curSym}${fmtNum(e.amt)}</td>
+      <td class="no-print"><button class="del-btn" onclick="deleteExpense(${e.id})">✕</button></td>
+    </tr>
+  `).join('');
+
+  renderDashboard();
+  renderCategories();
+}
+
+/* ══════════════════════════════
+   SORT
+══════════════════════════════ */
+function sortBy(field){
+  if(sortField===field) sortDir*=-1;
+  else{ sortField=field; sortDir=-1; }
+  ['date','desc','cat','notes','tax','amt'].forEach(f=>{
+    const th=document.getElementById('th-'+f);
+    if(!th)return;
+    th.classList.toggle('sorted', f===sortField);
+    th.querySelector('.sort-arrow').textContent = f===sortField ? (sortDir===-1?'↓':'↑') : '↕';
+  });
+  renderTable();
+}
+
+/* ══════════════════════════════
+   CSV EXPORT
+══════════════════════════════ */
+function exportCSV(){
+  if(expenses.length===0){ toast('No expenses to export','⚠️'); return; }
+  const header = ['Date','Description','Category','Notes','Tax','Amount','Currency'];
+  const rows = expenses.map(e=>[
+    e.date,
+    '"'+String(e.desc).replace(/"/g,'""')+'"',
+    '"'+String(e.cat).replace(/"/g,'""')+'"',
+    '"'+String(e.notes||'').replace(/"/g,'""').replace(/[\r\n]+/g,' ')+'"',
+    e.tax.toFixed(2),
+    e.amt.toFixed(2),
+    curSym
+  ].join(','));
+  const csv = [header.join(','), ...rows].join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = 'expenses-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported ✓ — your data is safe on your computer 💾','');
+}
+
+/* ══════════════════════════════
+   CSV IMPORT
+══════════════════════════════ */
+function importCSV(event){
+  const file = event.target.files[0];
+  if(!file){ return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const lines = e.target.result.split('\n').filter(l=>l.trim());
+    if(lines.length < 2){ toast('CSV appears empty or invalid','⚠️'); return; }
+
+    const header = lines[0].split(',').map(h=>h.trim().toLowerCase());
+    const iDate  = header.indexOf('date');
+    const iDesc  = header.indexOf('description');
+    const iCat   = header.indexOf('category');
+    const iNotes = header.indexOf('notes');
+    const iTax   = header.indexOf('tax');
+    const iAmt   = header.indexOf('amount');
+
+    if(iDesc===-1||iAmt===-1){ toast('CSV must have at least "description" and "amount" columns','⚠️'); return; }
+
+    let imported = 0, skipped = 0;
+    lines.slice(1).forEach(line=>{
+      // Handle quoted commas
+      const cols = parseCSVLine(line);
+      const amt = parseFloat(cols[iAmt]);
+      if(isNaN(amt)) { skipped++; return; }
+      expenses.push({
+        id:    Date.now() + Math.random(),
+        date:  iDate>-1  ? (cols[iDate]||fmtDate(new Date())) : fmtDate(new Date()),
+        desc:  iDesc>-1  ? cols[iDesc]  : 'Imported',
+        cat:   iCat>-1   ? cols[iCat]   : 'Other',
+        notes: iNotes>-1 ? cols[iNotes] : '',
+        tax:   iTax>-1   ? (parseFloat(cols[iTax])||0) : 0,
+        amt,
+      });
+      imported++;
+    });
+    save();
+    renderAll();
+    toast(`Imported ${imported} expenses${skipped?' ('+skipped+' skipped)':''}  ✓`,'');
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function parseCSVLine(line){
+  const result=[];let cur='';let inQ=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){ if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ; }
+    else if(ch===','&&!inQ){ result.push(cur.trim());cur=''; }
+    else cur+=ch;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+/* ══════════════════════════════
+   CLEAR ALL
+══════════════════════════════ */
+function clearAll(){
+  if(!confirm('Delete ALL expenses? Export a CSV backup first if needed.')) return;
+  expenses=[];
+  save();
+  renderAll();
+  toast('All expenses cleared','');
+}
+
+/* ══════════════════════════════
+   UTILS
+══════════════════════════════ */
+function fmtNum(n){ return Number(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+let toastTimer;
+function toast(msg,icon){
+  const el=document.getElementById('toast');
+  el.textContent=(icon?icon+' ':'')+msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3000);
+}
+</script>
+
+<!-- ── GOLDFRAME LICENSE MODAL ── -->
+<div id="gf-license-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.4);border-radius:16px;padding:36px;max-width:420px;width:90%;text-align:center;font-family:'Outfit',sans-serif;">
+    <div style="font-size:28px;margin-bottom:8px;">🔑</div>
+    <h3 style="color:#d4af37;font-size:18px;margin-bottom:8px;">Unlock GoldFrame</h3>
+    <p style="color:#7a7870;font-size:13px;margin-bottom:20px;">Enter your license key to remove the watermark from all exports.</p>
+    <input id="gf-key-input" type="text" placeholder="Enter your Gumroad license key"
+      style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:#09090d;color:#f0ece0;font-size:14px;font-family:monospace;text-align:center;outline:none;margin-bottom:12px;">
+    <div id="gf-key-error" style="color:#ff5a5a;font-size:12px;margin-bottom:12px;display:none;">Invalid license key. Please check and try again.</div>
+    <button onclick="gfActivate()" style="width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,#7a5210,#d4af37);color:#000;font-weight:600;font-size:14px;border:none;cursor:pointer;margin-bottom:10px;">Activate License</button>
+    <button onclick="document.getElementById('gf-license-modal').style.display='none'" style="background:transparent;border:none;color:#7a7870;font-size:12px;cursor:pointer;text-decoration:underline;">Cancel</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.1);">
+      <p style="color:#7a7870;font-size:12px;">Don't have a license? <a href="https://goldframe.gumroad.com" target="_blank" style="color:#d4af37;">Get GoldFrame Kit →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ── UNLOCK BADGE (shows when locked) ── -->
+<div id="gf-unlock-badge" style="position:fixed;bottom:20px;right:20px;z-index:9999;cursor:pointer;" onclick="document.getElementById('gf-license-modal').style.display='flex'" title="Unlock full version">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.35);border-radius:30px;padding:8px 14px;display:flex;align-items:center;gap:6px;font-family:'Outfit',sans-serif;">
+    <span style="font-size:13px;">🔑</span>
+    <span style="color:#d4af37;font-size:12px;font-weight:500;">Unlock</span>
+  </div>
+</div>
+
+<script>
+
+
+// ── EXPENSE SAMPLE DATA (remove to start blank) ──────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  if(localStorage.getItem('gfe_sample_loaded')) return;
+  setTimeout(function(){
+    const today = new Date();
+    const m = String(today.getMonth()+1).padStart(2,'0');
+    const y = today.getFullYear();
+    const d = (n) => `${y}-${m}-${String(n).padStart(2,'0')}`;
+    const sampleExpenses = [
+      { id:1, date:d(2),  desc:'Adobe Creative Cloud',         amount:5400,  category:'Software',    tax:true  },
+      { id:2, date:d(3),  desc:'Figma Professional Plan',      amount:1500,  category:'Software',    tax:true  },
+      { id:3, date:d(5),  desc:'Client Meeting — Cafe Coffee Day', amount:850, category:'Meals',    tax:false },
+      { id:4, date:d(7),  desc:'Ola — Client Site Visit',      amount:420,   category:'Travel',      tax:false },
+      { id:5, date:d(8),  desc:'Canva Pro Subscription',       amount:999,   category:'Software',    tax:true  },
+      { id:6, date:d(10), desc:'Office Supplies — Stationery', amount:1200,  category:'Office',      tax:false },
+      { id:7, date:d(12), desc:'Airtel Broadband',             amount:1499,  category:'Utilities',   tax:true  },
+      { id:8, date:d(14), desc:'Printing — Client Brochures',  amount:3200,  category:'Production',  tax:true  },
+      { id:9, date:d(15), desc:'Swiggy — Team Lunch',          amount:1840,  category:'Meals',       tax:false },
+      { id:10,date:d(17), desc:'Google Workspace',             amount:680,   category:'Software',    tax:true  },
+      { id:11,date:d(19), desc:'Stock Photos — Shutterstock',  amount:2100,  category:'Assets',      tax:true  },
+      { id:12,date:d(21), desc:'Courier — Client Documents',   amount:350,   category:'Office',      tax:false },
+      { id:13,date:d(23), desc:'Coworking Space — Day Pass x3',amount:2700,  category:'Office',      tax:true  },
+      { id:14,date:d(25), desc:'Font License — Fontspring',    amount:4500,  category:'Assets',      tax:true  },
+    ];
+    expenses = sampleExpenses;
+    curSym = '₹';
+    const sel = document.getElementById('currencySel');
+    if(sel) sel.value = 'INR|₹|🇮🇳';
+    save();
+    render();
+    localStorage.setItem('gfe_sample_loaded','1');
+  }, 200);
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── GOLDFRAME LICENSE SYSTEM ──────────────────────────────────────
+(function(){
+  // Validate via Gumroad's license API (buyer gets key automatically in receipt email)
+  // Gumroad product permalink — update this to your actual product permalink
+  const GUMROAD_PRODUCT = "goldframekit";
+
+  async function isValidKey(key){
+    const k = key.trim();
+    if(!k) return false;
+    // First check localStorage cache to work offline after first activation
+    const cached = localStorage.getItem('gf_verified_key');
+    if(cached === k) return true;
+    try {
+      const res = await fetch("https://api.gumroad.com/v2/licenses/verify", {
+        method: "POST",
+        headers: {"Content-Type":"application/x-www-form-urlencoded"},
+        body: `product_permalink=${GUMROAD_PRODUCT}&license_key=${encodeURIComponent(k)}&increment_uses_count=false`
+      });
+      const data = await res.json();
+      if(data.success){
+        localStorage.setItem('gf_verified_key', k); // cache for offline use
+        return true;
+      }
+      return false;
+    } catch(e) {
+      // If offline and we have a cached key, allow it
+      return localStorage.getItem('gf_licensed') === '1';
+    }
+  }
+
+  function setUnlocked(){
+    document.body.classList.remove('gf-locked');
+    const badge = document.getElementById('gf-unlock-badge');
+    if(badge) badge.style.display = 'none';
+    localStorage.setItem('gf_licensed','1');
+  }
+
+  window.gfActivate = async function(){
+    const key = document.getElementById('gf-key-input').value.trim();
+    const err = document.getElementById('gf-key-error');
+    err.style.display = 'none';
+    if(!key){ err.style.display='block'; err.textContent='Please enter a license key.'; return; }
+    const valid = await isValidKey(key);
+    if(valid){
+      localStorage.setItem('gf_key', key);
+      setUnlocked();
+      document.getElementById('gf-license-modal').style.display='none';
+      // Show success toast if available
+      if(typeof showToast === 'function') showToast('✅ GoldFrame unlocked!');
+    } else {
+      err.style.display='block';
+      err.textContent='Invalid license key. Check your Gumroad receipt.';
+    }
+  };
+
+  // Check on load
+  document.addEventListener('DOMContentLoaded', function(){
+    const savedKey = localStorage.getItem('gf_key');
+    if(savedKey){
+      isValidKey(savedKey).then(valid => {
+        if(valid){ setUnlocked(); }
+        else { document.body.classList.add('gf-locked'); }
+      });
+    } else {
+      document.body.classList.add('gf-locked');
+    }
+  });
+})();
+// ─────────────────────────────────────────────────────────────────
+
+</script>
+</body>
+</html>

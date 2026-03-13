@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldFrame · Project Roadmap</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   GOLDFRAME · PROJECT ROADMAP
+   GoldFrame Agency Suite © 2026
+   Single-file, zero-dependency
+═══════════════════════════════════════════════ */
+:root {
+  --gold-1: #fcf6ba;
+  --gold-2: #e8c84a;
+  --gold-3: #d4af37;
+  --gold-4: #aa771c;
+  --gold-5: #7a5210;
+  --gold-grad: linear-gradient(135deg, var(--gold-5) 0%, var(--gold-1) 38%, var(--gold-3) 62%, var(--gold-5) 100%);
+  --gold-glow: rgba(212,175,55,.22);
+  --bg: #09090d;
+  --bg2: #0e0e16;
+  --glass: rgba(12,12,20,.75);
+  --border: rgba(212,175,55,.28);
+  --border2: rgba(212,175,55,.5);
+  --text: #f0ece0;
+  --muted: #b0aca4;
+  --label: #a09880;
+  --dim: #5a5650;
+  --red: #ff5a5a;
+  --grn: #4ade80;
+  --r: 14px; --r2: 8px;
+
+  /* Status colours */
+  --s-todo:     #94a3b8;
+  --s-progress: #e8c84a;
+  --s-review:   #fb923c;
+  --s-done:     #4ade80;
+  --s-blocked:  #ff5a5a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;line-height:1.6;}
+
+/* STARFIELD */
+#starfield{position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 40% 20%,#16142a 0%,#09090d 65%);}
+#starfield canvas{position:absolute;inset:0;width:100%;height:100%;}
+
+/* LAYOUT */
+.wrap{max-width:860px;margin:0 auto;padding:32px 20px 80px;}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:12px;}
+.brand{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.25em;background:var(--gold-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-transform:uppercase;}
+.topbar-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.tb-btn{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:7px 16px;border-radius:20px;cursor:pointer;letter-spacing:.04em;transition:all .18s;}
+.tb-pdf{background:var(--gold-grad);color:#000;border:none;}
+.tb-pdf:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.tb-save{background:transparent;color:var(--gold-2);border:1.5px solid var(--border2);}
+.tb-save:hover{background:rgba(212,175,55,.1);}
+.tb-load{background:transparent;color:var(--muted);border:1.5px solid var(--dim);}
+.tb-load:hover{border-color:var(--muted);color:var(--text);}
+.tb-new{background:transparent;color:var(--muted);border:1.5px solid var(--dim);}
+.tb-new:hover{border-color:var(--red);color:var(--red);}
+
+/* CARDS */
+.card{background:var(--glass);border:1px solid var(--border);border-radius:var(--r);padding:24px 28px;margin-bottom:16px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.04);transition:border-color .2s;}
+.card:focus-within{border-color:var(--border2);}
+.card-title{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;color:var(--gold-3);text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+
+/* FORM */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.field:last-child{margin-bottom:0;}
+label{font-size:12px;letter-spacing:.08em;color:var(--label);text-transform:uppercase;font-weight:600;}
+input[type=text],input[type=date],select,textarea{background:rgba(0,0,0,.45);border:1px solid var(--border);color:var(--text);padding:10px 13px;font-size:14px;font-family:'Outfit',sans-serif;border-radius:var(--r2);width:100%;transition:border-color .15s,box-shadow .15s;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--gold-3);box-shadow:0 0 0 3px rgba(212,175,55,.12);}
+input::placeholder,textarea::placeholder{color:#6a6660;}
+select option{background:#1a1a26;color:var(--text);}
+textarea{resize:vertical;min-height:72px;line-height:1.6;}
+
+/* LOGO */
+.logo-area{border:1.5px dashed var(--border2);border-radius:var(--r2);padding:18px;text-align:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+.logo-area:hover{border-color:var(--gold-2);background:rgba(212,175,55,.04);}
+.logo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.logo-preview{max-height:70px;max-width:180px;object-fit:contain;display:none;margin:0 auto;}
+.logo-hint{font-size:12px;color:var(--muted);}
+.logo-icon{font-size:24px;margin-bottom:6px;display:block;}
+.header-grid{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:start;}
+
+/* PROGRESS SUMMARY */
+.progress-bar-wrap{height:8px;background:var(--dim);border-radius:4px;overflow:hidden;margin:16px 0 6px;}
+.progress-bar{height:100%;background:var(--gold-grad);border-radius:4px;transition:width .5s ease;}
+.progress-stats{display:flex;gap:20px;flex-wrap:wrap;}
+.prog-stat{font-size:12px;}
+.prog-stat strong{font-family:'DM Mono',monospace;font-size:14px;}
+.prog-stat.done strong{color:var(--grn);}
+.prog-stat.progress strong{color:var(--gold-2);}
+.prog-stat.blocked strong{color:var(--red);}
+.prog-stat.total strong{color:var(--text);}
+
+/* PHASES */
+.phase-block{border:1px solid var(--border);border-radius:var(--r2);margin-bottom:14px;overflow:hidden;transition:border-color .2s;}
+.phase-block:focus-within{border-color:var(--border2);}
+.phase-header{display:grid;grid-template-columns:auto 1fr 130px 130px auto auto;gap:10px;align-items:center;padding:14px 16px;background:rgba(0,0,0,.35);cursor:pointer;}
+.phase-header:hover{background:rgba(212,175,55,.04);}
+.phase-num{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold-3);letter-spacing:.12em;white-space:nowrap;}
+.phase-name-input{background:transparent;border:none;color:var(--text);font-size:14px;font-weight:600;font-family:'Outfit',sans-serif;padding:0;width:100%;}
+.phase-name-input:focus{outline:none;color:var(--gold-1);}
+.phase-name-input::placeholder{color:#6a6660;}
+.phase-date-input{background:rgba(0,0,0,.3);border:1px solid var(--dim);color:var(--muted);padding:5px 8px;font-size:12px;font-family:'DM Mono',monospace;border-radius:6px;width:100%;}
+.phase-date-input:focus{outline:none;border-color:var(--gold-3);color:var(--text);}
+.phase-status{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:.05em;border:none;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;}
+.phase-actions{display:flex;gap:6px;flex-shrink:0;}
+.icon-btn{background:transparent;border:1px solid var(--dim);color:var(--muted);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:13px;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;}
+.icon-btn:hover{border-color:var(--red);color:var(--red);}
+.icon-btn.expand-btn:hover{border-color:var(--gold-3);color:var(--gold-2);}
+.phase-body{display:none;padding:16px;}
+.phase-body.open{display:block;}
+
+/* DELIVERABLES inside phase */
+.deliv-header{display:grid;grid-template-columns:1fr 120px 120px 100px 28px;gap:8px;padding:0 4px 8px;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--dim);margin-bottom:6px;}
+.deliv-row{display:grid;grid-template-columns:1fr 120px 120px 100px 28px;gap:8px;align-items:center;padding:6px 4px;border-bottom:1px solid rgba(212,175,55,.05);animation:rowIn .15s ease;}
+@keyframes rowIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.deliv-row input[type=text]{padding:7px 10px;font-size:13px;}
+.deliv-row input[type=date]{padding:7px 8px;font-size:12px;font-family:'DM Mono',monospace;}
+.deliv-status-sel{padding:5px 8px;font-size:12px;font-weight:700;border-radius:20px;border:none;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;}
+.add-deliv-row{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--dim);}
+.btn-add-sm{background:transparent;border:1px solid var(--border2);color:var(--gold-2);padding:7px 16px;border-radius:var(--r2);cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;transition:all .15s;white-space:nowrap;}
+.btn-add-sm:hover{background:rgba(212,175,55,.08);}
+.phase-notes-field{margin-top:12px;}
+.phase-notes-field textarea{min-height:60px;font-size:13px;}
+
+/* ADD PHASE BTN */
+.btn-add-phase{width:100%;padding:14px;border-radius:var(--r2);background:transparent;border:1.5px dashed var(--border2);color:var(--gold-2);cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;transition:all .18s;margin-top:4px;}
+.btn-add-phase:hover{background:rgba(212,175,55,.06);border-style:solid;}
+
+/* STATUS COLOURS */
+.status-todo     {background:rgba(148,163,184,.15);color:var(--s-todo);    border:1px solid rgba(148,163,184,.3);}
+.status-progress {background:rgba(232,200,74,.12); color:var(--s-progress);border:1px solid rgba(232,200,74,.3);}
+.status-review   {background:rgba(251,146,60,.12); color:var(--s-review);  border:1px solid rgba(251,146,60,.3);}
+.status-done     {background:rgba(74,222,128,.12); color:var(--s-done);    border:1px solid rgba(74,222,128,.3);}
+.status-blocked  {background:rgba(255,90,90,.12);  color:var(--s-blocked); border:1px solid rgba(255,90,90,.3);}
+
+/* SAVED PANEL */
+.saved-panel{display:none;position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);align-items:center;justify-content:center;}
+.saved-panel.open{display:flex;}
+.saved-box{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r);padding:28px;width:520px;max-width:90vw;max-height:80vh;overflow-y:auto;}
+.saved-box h2{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;color:var(--gold-3);text-transform:uppercase;margin-bottom:20px;}
+.saved-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;transition:all .15s;}
+.saved-item:hover{border-color:var(--gold-3);background:rgba(212,175,55,.05);}
+.saved-item-meta{font-size:12px;color:var(--muted);margin-top:3px;}
+.saved-item-actions{display:flex;gap:8px;flex-shrink:0;}
+.si-load{background:var(--gold-grad);color:#000;border:none;padding:5px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;}
+.si-del{background:transparent;border:1px solid var(--dim);color:var(--muted);padding:5px 10px;border-radius:20px;cursor:pointer;font-size:12px;transition:all .12s;}
+.si-del:hover{border-color:var(--red);color:var(--red);}
+.close-panel{float:right;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.close-panel:hover{color:var(--text);}
+.empty-saved{text-align:center;color:var(--muted);padding:32px;font-size:14px;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--glass);border:1px solid var(--border2);padding:12px 24px;border-radius:40px;font-size:14px;font-weight:500;backdrop-filter:blur(20px);z-index:200;transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* PRINT */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; color: #1a1a1a !important; font-family: 'Outfit', Arial, sans-serif !important; }
+  #starfield,.no-print,.topbar,.icon-btn,.add-deliv-row,.btn-add-phase,
+  .tb-btn,.saved-panel,.toast { display: none !important; }
+  .wrap { max-width: 100% !important; padding: 20px !important; }
+  h1, .brand { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; background: none !important; }
+  .card { background: #fff !important; border: none !important; border-left: 3px solid #d4af37 !important;
+    box-shadow: none !important; backdrop-filter: none !important;
+    break-inside: avoid; margin-bottom: 16px !important; padding: 16px 20px !important; }
+  .card-title { color: #d4af37 !important; font-size:12px !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
+  .phase-card { background: #fafafa !important; border: 1px solid #e5e5e5 !important; border-top: 3px solid #d4af37 !important;
+    break-inside: avoid !important; margin-bottom: 16px !important; padding: 16px !important; box-shadow: none !important; }
+  .phase-title { color: #1a1a1a !important; font-weight: 600 !important; font-size: 15px !important; }
+  .phase-status { border: 1px solid #d4af37 !important; color: #d4af37 !important;
+    background: #fff !important; border-radius: 20px !important; padding: 2px 10px !important;
+    font-size: 12px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .deliv-row { border-bottom: 1px solid #f0f0f0 !important; padding: 6px 0 !important; }
+  .deliv-status-sel { border: 1px solid #e5e5e5 !important; color: #888 !important;
+    background: #fff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .progress-bar { background: #f0f0f0 !important; border-radius: 4px !important; height: 6px !important;
+    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .progress-fill { background: #d4af37 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  .meta-grid { border-bottom: 1px solid #f0f0f0 !important; padding-bottom: 16px !important; margin-bottom: 16px !important; }
+  label { color: #888 !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+  input, select, textarea { border: none !important; border-bottom: 1px solid #e5e5e5 !important;
+    background: transparent !important; color: #1a1a1a !important; padding: 2px 0 !important; }
+}
+@media(max-width:600px){
+  .header-grid,.row,.row3{grid-template-columns:1fr;}
+  .phase-header{grid-template-columns:auto 1fr auto auto;}
+  .phase-header .phase-date-input{display:none;}
+  .deliv-header,.deliv-row{grid-template-columns:1fr 90px 80px 28px;}
+  .deliv-header span:nth-child(4),.deliv-row input:nth-child(4){display:none;}
+}
+
+/* ── GOLDFRAME WATERMARK ── */
+@media print {
+  body.gf-locked::before {
+    content: "GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com";
+    position: fixed;
+    top: 38%;
+    left: -20%;
+    width: 140%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(180,180,180,0.18) !important;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    transform: rotate(-35deg);
+    z-index: 99999;
+    pointer-events: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+  body.gf-locked::after {
+    content: "GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com  ·  GoldFrame Free  ·  goldframe.gumroad.com";
+    position: fixed;
+    top: 62%;
+    left: -20%;
+    width: 140%;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: rgba(180,180,180,0.18) !important;
+    font-family: Arial, sans-serif;
+    letter-spacing: 2px;
+    transform: rotate(-35deg);
+    z-index: 99999;
+    pointer-events: none;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    white-space: nowrap;
+    text-transform: uppercase;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="starfield"><canvas id="sc"></canvas></div>
+
+<div class="saved-panel" id="savedPanel">
+  <div class="saved-box">
+    <button class="close-panel" onclick="closeSaved()">✕</button>
+    <h2>📁 Saved Roadmaps</h2>
+    <div id="savedList"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar no-print">
+    <div class="brand">GoldFrame · Project Roadmap</div>
+    <div class="topbar-actions">
+      <button class="tb-btn tb-new" onclick="newRoadmap()">＋ New</button>
+      <button class="tb-btn tb-load" onclick="openSaved()">📁 Load</button>
+      <button class="tb-btn tb-save" onclick="saveRoadmap()">💾 Save</button>
+      <button class="tb-btn tb-pdf" onclick="downloadPDF()">📥 PDF Roadmap</button>
+    </div>
+  </div>
+
+  <!-- PROJECT INFO -->
+  <div class="card">
+    <div class="card-title">Project Information</div>
+    <div class="header-grid">
+      <div>
+        <label style="margin-bottom:8px;display:block">Logo</label>
+        <div class="logo-area" onclick="document.getElementById('logoInput').click()">
+          <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="uploadLogo(event)">
+          <img id="logoPreview" class="logo-preview" alt="Logo">
+          <div id="logoHint"><span class="logo-icon">🖼️</span><div class="logo-hint">Click to upload<br><small>PNG, JPG, SVG</small></div></div>
+        </div>
+        <button class="no-print" onclick="removeLogo()" id="removeLogoBtn" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--dim);color:var(--muted);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:12px;width:100%">✕ Remove</button>
+      </div>
+      <div>
+        <div class="field"><label>Project Name</label><input type="text" id="projName" placeholder="Brand Identity Redesign"></div>
+        <div class="field"><label>Client</label><input type="text" id="projClient" placeholder="Acme Corp"></div>
+        <div class="row">
+          <div class="field"><label>Start Date</label><input type="date" id="projStart"></div>
+          <div class="field"><label>Target End Date</label><input type="date" id="projEnd"></div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <div class="field"><label>Prepared By</label><input type="text" id="prepBy" placeholder="Your Name / Studio"></div>
+      <div class="field"><label>Version</label><input type="text" id="projVer" placeholder="v1.0"></div>
+    </div>
+    <div class="field" style="margin-top:4px;">
+      <label>Project Brief</label>
+      <textarea id="projBrief" placeholder="A one-paragraph summary of the project goals, scope, and key success criteria..."></textarea>
+    </div>
+  </div>
+
+  <!-- PROGRESS OVERVIEW -->
+  <div class="card" id="progressCard">
+    <div class="card-title">Overall Progress</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:14px;">
+      <span id="progressPct" style="font-family:'DM Mono',monospace;color:var(--gold-2);font-weight:600;">0% complete</span>
+      <span id="daysLeft" style="font-family:'DM Mono',monospace;"></span>
+    </div>
+    <div class="progress-stats" id="progressStats"></div>
+  </div>
+
+  <!-- PHASES -->
+  <div class="card">
+    <div class="card-title">Phases & Deliverables</div>
+    <div id="phasesList"></div>
+    <button class="btn-add-phase no-print" onclick="addPhase()">＋ Add Phase</button>
+  </div>
+
+  <!-- NOTES -->
+  <div class="card">
+    <div class="card-title">Project Notes & Assumptions</div>
+    <div class="field">
+      <label>Notes</label>
+      <textarea id="projNotes" style="min-height:100px;" placeholder="Any assumptions, risks, dependencies, or important notes for this project..."></textarea>
+    </div>
+  </div>
+
+  <button class="tb-btn tb-pdf no-print" style="width:100%;padding:14px;border-radius:var(--r2);font-size:14px;margin-top:4px;" onclick="downloadPDF()">📥 Download PDF Roadmap</button>
+
+</div>
+
+<script>
+/* ══════════════════════════
+   STARFIELD
+══════════════════════════ */
+(function(){
+  const c=document.getElementById('sc'),ctx=c.getContext('2d');
+  let W,H,stars=[],rafId=null,t=0;
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function init(){stars=[];for(let i=0;i<Math.floor(W*H/4000);i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,o:Math.random()*.5+.1,s:Math.random()*.012+.004,ph:Math.random()*Math.PI*2});}
+  function draw(){if(document.hidden){rafId=null;return;}ctx.clearRect(0,0,W,H);t+=.01;stars.forEach(s=>{const op=s.o*(.5+.5*Math.sin(t*s.s*60+s.ph));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,240,180,${op})`;ctx.fill();});rafId=requestAnimationFrame(draw);}
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!rafId)draw();});
+  window.addEventListener('resize',()=>{resize();init();});
+  resize();init();draw();
+})();
+
+/* ══════════════════════════
+   STATE
+══════════════════════════ */
+const STATUS_LIST = ['todo','progress','review','done','blocked'];
+const STATUS_LABEL = {todo:'To Do', progress:'In Progress', review:'In Review', done:'Done', blocked:'Blocked'};
+
+let phases = [];
+let logoData = null;
+let currentFileKey = 'gfr_' + Date.now(); // Unique session ID — never changes unless New or Load
+
+/* ══════════════════════════
+   INIT
+══════════════════════════ */
+(function init(){
+  const today = new Date();
+  const end = new Date(today); end.setDate(end.getDate()+30);
+  document.getElementById('projStart').value = fmtDate(today);
+  document.getElementById('projEnd').value   = fmtDate(end);
+  document.getElementById('projVer').value   = 'v1.0';
+  // Default phases to get buyer started
+  phases = [
+    { id: uid(), name:'Discovery & Brief', start:'', end:'', status:'todo', notes:'', open:true,
+      deliverables:[
+        {id:uid(), name:'Client questionnaire completed', due:'', status:'todo'},
+        {id:uid(), name:'Moodboard & direction approved',  due:'', status:'todo'},
+      ]
+    },
+    { id: uid(), name:'Concept Development', start:'', end:'', status:'todo', notes:'', open:false,
+      deliverables:[
+        {id:uid(), name:'Initial concepts presented', due:'', status:'todo'},
+        {id:uid(), name:'Chosen direction confirmed',  due:'', status:'todo'},
+      ]
+    },
+    { id: uid(), name:'Production & Revisions', start:'', end:'', status:'todo', notes:'', open:false,
+      deliverables:[
+        {id:uid(), name:'Round 1 deliverables sent',    due:'', status:'todo'},
+        {id:uid(), name:'Client revisions received',    due:'', status:'todo'},
+        {id:uid(), name:'Final files prepared',         due:'', status:'todo'},
+      ]
+    },
+    { id: uid(), name:'Final Delivery', start:'', end:'', status:'todo', notes:'', open:false,
+      deliverables:[
+        {id:uid(), name:'All files delivered to client', due:'', status:'done'},
+        {id:uid(), name:'Invoice sent & payment received',due:'', status:'todo'},
+      ]
+    },
+  ];
+  renderPhases();
+  renderProgress();
+  setInterval(renderProgress, 5000);
+})();
+
+function uid(){ return Date.now() + Math.random(); }
+function fmtDate(d){ return d.toISOString().split('T')[0]; }
+
+/* ══════════════════════════
+   LOGO
+══════════════════════════ */
+function uploadLogo(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=function(ev){
+    logoData=ev.target.result;
+    const p=document.getElementById('logoPreview');
+    p.src=logoData;p.style.display='block';
+    document.getElementById('logoHint').style.display='none';
+    document.getElementById('removeLogoBtn').style.display='block';
+  };r.readAsDataURL(file);
+}
+function removeLogo(){
+  logoData=null;
+  document.getElementById('logoPreview').style.display='none';
+  document.getElementById('logoHint').style.display='block';
+  document.getElementById('removeLogoBtn').style.display='none';
+  document.getElementById('logoInput').value='';
+}
+
+/* ══════════════════════════
+   PHASES
+══════════════════════════ */
+function addPhase(){
+  phases.push({id:uid(),name:'',start:'',end:'',status:'todo',notes:'',open:true,deliverables:[]});
+  renderPhases();
+  renderProgress();
+  // Focus new phase name
+  setTimeout(()=>{
+    const inputs=document.querySelectorAll('.phase-name-input');
+    if(inputs.length) inputs[inputs.length-1].focus();
+  },50);
+}
+
+function removePhase(id){
+  if(!confirm('Remove this phase and all its deliverables?'))return;
+  phases=phases.filter(p=>p.id!==id);
+  renderPhases();renderProgress();
+}
+
+function togglePhase(id){
+  const p=phases.find(x=>x.id===id);
+  if(p){p.open=!p.open;renderPhases();}
+}
+
+function updatePhaseField(id,field,val){
+  const p=phases.find(x=>x.id===id);
+  if(p){p[field]=val;if(field==='status')renderPhases();renderProgress();}
+}
+
+function cyclePhaseStatus(id){
+  const p=phases.find(x=>x.id===id);
+  if(!p)return;
+  const i=STATUS_LIST.indexOf(p.status);
+  p.status=STATUS_LIST[(i+1)%STATUS_LIST.length];
+  renderPhases();renderProgress();
+}
+
+/* ══════════════════════════
+   DELIVERABLES
+══════════════════════════ */
+function addDeliverable(phaseId){
+  const inp=document.getElementById('deliv-input-'+phaseId);
+  const name=inp?inp.value.trim():'';
+  if(!name){toast('Enter a deliverable name','⚠️');return;}
+  const p=phases.find(x=>x.id===phaseId);
+  if(p){p.deliverables.push({id:uid(),name,due:'',status:'todo'});inp.value='';}
+  renderPhases();renderProgress();
+}
+
+function removeDeliverable(phaseId,delivId){
+  const p=phases.find(x=>x.id===phaseId);
+  if(p){p.deliverables=p.deliverables.filter(d=>d.id!==delivId);}
+  renderPhases();renderProgress();
+}
+
+function updateDelivField(phaseId,delivId,field,val){
+  const p=phases.find(x=>x.id===phaseId);
+  if(!p)return;
+  const d=p.deliverables.find(x=>x.id===delivId);
+  if(d){d[field]=val;if(field==='status'){renderPhases();renderProgress();}}
+}
+
+function cycleDelivStatus(phaseId,delivId){
+  const p=phases.find(x=>x.id===phaseId);
+  if(!p)return;
+  const d=p.deliverables.find(x=>x.id===delivId);
+  if(!d)return;
+  const i=STATUS_LIST.indexOf(d.status);
+  d.status=STATUS_LIST[(i+1)%STATUS_LIST.length];
+  renderPhases();renderProgress();
+}
+
+/* ══════════════════════════
+   RENDER PHASES
+══════════════════════════ */
+function renderPhases(){
+  const el=document.getElementById('phasesList');
+  if(phases.length===0){
+    el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px;font-size:14px;">No phases yet — click "+ Add Phase" below.</div>';
+    return;
+  }
+  el.innerHTML=phases.map((p,i)=>`
+    <div class="phase-block" id="phase-${p.id}">
+      <div class="phase-header" onclick="togglePhase(${p.id})">
+        <span class="phase-num">PHASE ${String(i+1).padStart(2,'0')}</span>
+        <input class="phase-name-input" type="text" value="${escHtml(p.name)}" placeholder="Phase name..."
+          onclick="event.stopPropagation()"
+          onchange="updatePhaseField(${p.id},'name',this.value)"
+          oninput="updatePhaseField(${p.id},'name',this.value)">
+        <input class="phase-date-input" type="date" value="${p.start}" title="Start date"
+          onclick="event.stopPropagation()"
+          onchange="updatePhaseField(${p.id},'start',this.value)">
+        <input class="phase-date-input" type="date" value="${p.end}" title="End date"
+          onclick="event.stopPropagation()"
+          onchange="updatePhaseField(${p.id},'end',this.value)">
+        <button class="phase-status status-${p.status} no-print"
+          onclick="event.stopPropagation();cyclePhaseStatus(${p.id})"
+          title="Click to cycle status">${STATUS_LABEL[p.status]}</button>
+        <div class="phase-actions no-print" onclick="event.stopPropagation()">
+          <button class="icon-btn expand-btn" onclick="togglePhase(${p.id})" title="${p.open?'Collapse':'Expand'}">${p.open?'▲':'▼'}</button>
+          <button class="icon-btn" onclick="removePhase(${p.id})" title="Remove phase">✕</button>
+        </div>
+      </div>
+
+      <div class="phase-body ${p.open?'open':''}">
+        ${p.deliverables.length>0?`
+        <div class="deliv-header">
+          <span>Deliverable</span>
+          <span>Due Date</span>
+          <span>Status</span>
+          <span></span>
+        </div>
+        `:''}
+        ${p.deliverables.map(d=>`
+          <div class="deliv-row">
+            <input type="text" value="${escHtml(d.name)}" placeholder="Deliverable description"
+              onchange="updateDelivField(${p.id},${d.id},'name',this.value)"
+              oninput="updateDelivField(${p.id},${d.id},'name',this.value)">
+            <input type="date" value="${d.due}"
+              onchange="updateDelivField(${p.id},${d.id},'due',this.value)">
+            <button class="deliv-status-sel status-${d.status} no-print"
+              onclick="cycleDelivStatus(${p.id},${d.id})"
+              title="Click to cycle status">${STATUS_LABEL[d.status]}</button>
+            <button class="icon-btn no-print" onclick="removeDeliverable(${p.id},${d.id})">✕</button>
+          </div>
+        `).join('')}
+
+        <div class="add-deliv-row no-print">
+          <input type="text" id="deliv-input-${p.id}" placeholder="Add deliverable..." style="flex:1;padding:8px 12px;font-size:13px;"
+            onkeydown="if(event.key==='Enter')addDeliverable(${p.id})">
+          <button class="btn-add-sm" onclick="addDeliverable(${p.id})">+ Add</button>
+        </div>
+
+        <div class="phase-notes-field">
+          <label style="font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;font-weight:600;display:block;margin-bottom:5px;">Phase Notes</label>
+          <textarea placeholder="Notes, blockers, or dependencies for this phase..."
+            onchange="updatePhaseField(${p.id},'notes',this.value)"
+            oninput="updatePhaseField(${p.id},'notes',this.value)">${escHtml(p.notes)}</textarea>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ══════════════════════════
+   PROGRESS
+══════════════════════════ */
+function renderProgress(){
+  const all=phases.flatMap(p=>p.deliverables);
+  const total=all.length;
+  if(total===0){
+    document.getElementById('progressBar').style.width='0%';
+    document.getElementById('progressPct').textContent='0% complete';
+    document.getElementById('progressStats').innerHTML='<span style="color:var(--muted);font-size:13px;">Add phases and deliverables to track progress.</span>';
+    document.getElementById('daysLeft').textContent='';
+    return;
+  }
+
+  const counts={todo:0,progress:0,review:0,done:0,blocked:0};
+  all.forEach(d=>counts[d.status]=(counts[d.status]||0)+1);
+  const pct=Math.round((counts.done/total)*100);
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressPct').textContent=pct+'% complete';
+
+  // Days remaining
+  const endVal=document.getElementById('projEnd').value;
+  if(endVal){
+    const diff=Math.ceil((new Date(endVal)-new Date())/(1000*60*60*24));
+    document.getElementById('daysLeft').textContent=
+      diff>0 ? diff+' days remaining' : diff===0 ? 'Due today' : Math.abs(diff)+' days overdue';
+    document.getElementById('daysLeft').style.color = diff<0?'var(--red)':diff<=7?'var(--s-review)':'var(--muted)';
+  }
+
+  document.getElementById('progressStats').innerHTML=`
+    <div class="prog-stat done"><strong>${counts.done}</strong> Done</div>
+    <div class="prog-stat progress"><strong>${counts.progress}</strong> In Progress</div>
+    <div class="prog-stat" style="font-size:12px"><strong style="font-family:'DM Mono',monospace;font-size:14px;color:var(--s-review)">${counts.review}</strong> In Review</div>
+    <div class="prog-stat" style="font-size:12px"><strong style="font-family:'DM Mono',monospace;font-size:14px;color:var(--muted)">${counts.todo}</strong> To Do</div>
+    ${counts.blocked>0?`<div class="prog-stat blocked"><strong>${counts.blocked}</strong> Blocked</div>`:''}
+    <div class="prog-stat total"><strong>${total}</strong> Total</div>
+  `;
+}
+
+/* ══════════════════════════
+   TEXTAREA PRINT FIX
+══════════════════════════ */
+function expandTextareasForPrint(){
+  if(document.querySelector('.print-text-expand'))return;
+  document.querySelectorAll('textarea').forEach(function(ta){
+    var div=document.createElement('div');
+    div.className='print-text-expand';
+    div.style.cssText='white-space:pre-wrap;word-break:break-word;font-family:inherit;font-size:13px;line-height:1.6;color:#000;padding:0;margin:0;width:100%;';
+    div.textContent=ta.value;
+    ta.parentNode.insertBefore(div,ta);
+    ta.style.display='none';
+  });
+  // Also open all phase bodies for print
+  document.querySelectorAll('.phase-body').forEach(function(b){b.classList.add('open');});
+}
+function restoreTextareasAfterPrint(){
+  if(!document.querySelector('.print-text-expand'))return;
+  document.querySelectorAll('.print-text-expand').forEach(function(d){d.remove();});
+  document.querySelectorAll('textarea').forEach(function(ta){ta.style.display='';});
+  renderPhases(); // restore open/closed states
+}
+window.addEventListener('beforeprint', expandTextareasForPrint);
+window.addEventListener('afterprint',  restoreTextareasAfterPrint);
+window.matchMedia('print').addEventListener('change',function(mql){
+  if(mql.matches) expandTextareasForPrint();
+  else            restoreTextareasAfterPrint();
+});
+
+/* ══════════════════════════
+   SAVE / LOAD
+══════════════════════════ */
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function v(id){return document.getElementById(id).value;}
+function sv(id,val){document.getElementById(id).value=val||'';}
+
+function getState(){
+  return {
+    projName:v('projName'),projClient:v('projClient'),projStart:v('projStart'),
+    projEnd:v('projEnd'),prepBy:v('prepBy'),projVer:v('projVer'),
+    projBrief:v('projBrief'),projNotes:v('projNotes'),
+    phases, logo:logoData,
+    savedAt:new Date().toLocaleString(),
+    label:(v('projName')||'Untitled')+' — '+(v('projClient')||'No client'),
+  };
+}
+
+function setState(s){
+  sv('projName',s.projName);sv('projClient',s.projClient);sv('projStart',s.projStart);
+  sv('projEnd',s.projEnd);sv('prepBy',s.prepBy);sv('projVer',s.projVer);
+  sv('projBrief',s.projBrief);sv('projNotes',s.projNotes);
+  phases=s.phases||[];
+  if(s.logo){logoData=s.logo;const p=document.getElementById('logoPreview');p.src=s.logo;p.style.display='block';document.getElementById('logoHint').style.display='none';document.getElementById('removeLogoBtn').style.display='block';}
+  else removeLogo();
+  renderPhases();renderProgress();
+}
+
+function saveRoadmap(){
+  const state=getState();
+  try{
+    localStorage.setItem(currentFileKey, JSON.stringify(state));
+    toast('Roadmap saved! 💾','');
+  }
+  catch(e){toast('Could not save — storage full','⚠️');}
+}
+
+function getSaved(){
+  return Object.keys(localStorage).filter(k=>k.startsWith('gfr_'))
+    .map(k=>({key:k,data:JSON.parse(localStorage.getItem(k))}))
+    .sort((a,b)=>new Date(b.data.savedAt)-new Date(a.data.savedAt));
+}
+function openSaved(){
+  const saved=getSaved();
+  const list=document.getElementById('savedList');
+  if(saved.length===0){list.innerHTML='<div class="empty-saved">No saved roadmaps yet.</div>';}
+  else{list.innerHTML=saved.map(({key,data})=>`
+    <div class="saved-item">
+      <div>
+        <div style="font-weight:600">${escHtml(data.label||'Untitled')}</div>
+        <div class="saved-item-meta">${data.savedAt}</div>
+      </div>
+      <div class="saved-item-actions">
+        <button class="si-load" onclick="loadRoadmap('${key}')">Load</button>
+        <button class="si-del" onclick="deleteSaved('${key}')">✕</button>
+      </div>
+    </div>
+  `).join('');}
+  document.getElementById('savedPanel').classList.add('open');
+}
+function closeSaved(){document.getElementById('savedPanel').classList.remove('open');}
+function loadRoadmap(key){const d=JSON.parse(localStorage.getItem(key));if(d){currentFileKey=key;setState(d);closeSaved();toast('Roadmap loaded ✓','');}}
+function deleteSaved(key){localStorage.removeItem(key);openSaved();toast('Deleted','');}
+
+function newRoadmap(){
+  if(!confirm('Start a new roadmap? Unsaved changes will be lost.'))return;
+  currentFileKey='gfr_'+Date.now(); // Fresh ID — prevents overwriting previous roadmaps
+  phases=[];logoData=null;removeLogo();
+  document.querySelectorAll('input[type=text],textarea').forEach(el=>el.value='');
+  const today=new Date(),end=new Date(today);end.setDate(end.getDate()+30);
+  sv('projStart',fmtDate(today));sv('projEnd',fmtDate(end));sv('projVer','v1.0');
+  renderPhases();renderProgress();
+}
+
+/* ══════════════════════════
+   PDF
+══════════════════════════ */
+function downloadPDF(){
+  if(!v('projName')&&phases.length===0){toast('Add a project name and phases first','⚠️');return;}
+  window.print();
+}
+
+/* ══════════════════════════
+   TOAST
+══════════════════════════ */
+let toastTimer;
+function toast(msg,icon){
+  const el=document.getElementById('toast');
+  el.textContent=(icon?icon+' ':'')+msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+
+document.getElementById('savedPanel').addEventListener('click',function(e){if(e.target===this)closeSaved();});
+document.getElementById('projEnd').addEventListener('change', renderProgress);
+</script>
+
+<!-- ── GOLDFRAME LICENSE MODAL ── -->
+<div id="gf-license-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.4);border-radius:16px;padding:36px;max-width:420px;width:90%;text-align:center;font-family:'Outfit',sans-serif;">
+    <div style="font-size:28px;margin-bottom:8px;">🔑</div>
+    <h3 style="color:#d4af37;font-size:18px;margin-bottom:8px;">Unlock GoldFrame</h3>
+    <p style="color:#7a7870;font-size:13px;margin-bottom:20px;">Enter your license key to remove the watermark from all exports.</p>
+    <input id="gf-key-input" type="text" placeholder="Enter your Gumroad license key"
+      style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:#09090d;color:#f0ece0;font-size:14px;font-family:monospace;text-align:center;outline:none;margin-bottom:12px;">
+    <div id="gf-key-error" style="color:#ff5a5a;font-size:12px;margin-bottom:12px;display:none;">Invalid license key. Please check and try again.</div>
+    <button onclick="gfActivate()" style="width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,#7a5210,#d4af37);color:#000;font-weight:600;font-size:14px;border:none;cursor:pointer;margin-bottom:10px;">Activate License</button>
+    <button onclick="document.getElementById('gf-license-modal').style.display='none'" style="background:transparent;border:none;color:#7a7870;font-size:12px;cursor:pointer;text-decoration:underline;">Cancel</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.1);">
+      <p style="color:#7a7870;font-size:12px;">Don't have a license? <a href="https://goldframe.gumroad.com" target="_blank" style="color:#d4af37;">Get GoldFrame Kit →</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ── UNLOCK BADGE (shows when locked) ── -->
+<div id="gf-unlock-badge" style="position:fixed;bottom:20px;right:20px;z-index:9999;cursor:pointer;" onclick="document.getElementById('gf-license-modal').style.display='flex'" title="Unlock full version">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.35);border-radius:30px;padding:8px 14px;display:flex;align-items:center;gap:6px;font-family:'Outfit',sans-serif;">
+    <span style="font-size:13px;">🔑</span>
+    <span style="color:#d4af37;font-size:12px;font-weight:500;">Unlock</span>
+  </div>
+</div>
+
+<script>
+
+
+// ── PROJECT SAMPLE DATA (remove to start blank) ──────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  if(localStorage.getItem('gfr_sample_loaded')) return;
+  setTimeout(function(){
+    setState({
+      projName: 'Nexus Ventures — Brand Overhaul',
+      clientName: 'Nexus Ventures Pvt. Ltd.',
+      startDate: new Date().toISOString().split('T')[0],
+      endDate: new Date(Date.now()+35*86400000).toISOString().split('T')[0],
+      projStatus: 'active',
+      budget: '115000',
+      currency: 'INR|₹|🇮🇳',
+      phases: [
+        { id:1, name:'Discovery & Strategy', status:'done',
+          startDate: new Date().toISOString().split('T')[0],
+          endDate: new Date(Date.now()+7*86400000).toISOString().split('T')[0],
+          deliverables:[
+            { id:1, text:'Kickoff call & brief',         status:'done', due: new Date(Date.now()+2*86400000).toISOString().split('T')[0] },
+            { id:2, text:'Competitor analysis report',   status:'done', due: new Date(Date.now()+5*86400000).toISOString().split('T')[0] },
+            { id:3, text:'Moodboard (3 directions)',     status:'done', due: new Date(Date.now()+7*86400000).toISOString().split('T')[0] },
+          ]
+        },
+        { id:2, name:'Brand Identity Design', status:'active',
+          startDate: new Date(Date.now()+8*86400000).toISOString().split('T')[0],
+          endDate: new Date(Date.now()+18*86400000).toISOString().split('T')[0],
+          deliverables:[
+            { id:4, text:'Logo concepts (3 options)',    status:'done',    due: new Date(Date.now()+10*86400000).toISOString().split('T')[0] },
+            { id:5, text:'Final logo + variations',      status:'active',  due: new Date(Date.now()+14*86400000).toISOString().split('T')[0] },
+            { id:6, text:'Colour palette & typography',  status:'pending', due: new Date(Date.now()+16*86400000).toISOString().split('T')[0] },
+            { id:7, text:'Brand style guide (PDF)',      status:'pending', due: new Date(Date.now()+18*86400000).toISOString().split('T')[0] },
+          ]
+        },
+        { id:3, name:'Website UI Design', status:'pending',
+          startDate: new Date(Date.now()+19*86400000).toISOString().split('T')[0],
+          endDate: new Date(Date.now()+30*86400000).toISOString().split('T')[0],
+          deliverables:[
+            { id:8, text:'Wireframes — all 10 pages',    status:'pending', due: new Date(Date.now()+22*86400000).toISOString().split('T')[0] },
+            { id:9, text:'High-fidelity Figma designs',  status:'pending', due: new Date(Date.now()+28*86400000).toISOString().split('T')[0] },
+            { id:10,text:'Mobile responsive screens',    status:'pending', due: new Date(Date.now()+30*86400000).toISOString().split('T')[0] },
+          ]
+        },
+        { id:4, name:'Final Delivery', status:'pending',
+          startDate: new Date(Date.now()+31*86400000).toISOString().split('T')[0],
+          endDate: new Date(Date.now()+35*86400000).toISOString().split('T')[0],
+          deliverables:[
+            { id:11,text:'All source files handover',    status:'pending', due: new Date(Date.now()+33*86400000).toISOString().split('T')[0] },
+            { id:12,text:'Client walkthrough session',   status:'pending', due: new Date(Date.now()+34*86400000).toISOString().split('T')[0] },
+            { id:13,text:'Final invoice + sign-off',     status:'pending', due: new Date(Date.now()+35*86400000).toISOString().split('T')[0] },
+          ]
+        },
+      ]
+    });
+    localStorage.setItem('gfr_sample_loaded','1');
+  }, 200);
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── GOLDFRAME LICENSE SYSTEM ──────────────────────────────────────
+(function(){
+  // Validate via Gumroad's license API (buyer gets key automatically in receipt email)
+  // Gumroad product permalink — update this to your actual product permalink
+  const GUMROAD_PRODUCT = "goldframekit";
+
+  async function isValidKey(key){
+    const k = key.trim();
+    if(!k) return false;
+    // First check localStorage cache to work offline after first activation
+    const cached = localStorage.getItem('gf_verified_key');
+    if(cached === k) return true;
+    try {
+      const res = await fetch("https://api.gumroad.com/v2/licenses/verify", {
+        method: "POST",
+        headers: {"Content-Type":"application/x-www-form-urlencoded"},
+        body: `product_permalink=${GUMROAD_PRODUCT}&license_key=${encodeURIComponent(k)}&increment_uses_count=false`
+      });
+      const data = await res.json();
+      if(data.success){
+        localStorage.setItem('gf_verified_key', k); // cache for offline use
+        return true;
+      }
+      return false;
+    } catch(e) {
+      // If offline and we have a cached key, allow it
+      return localStorage.getItem('gf_licensed') === '1';
+    }
+  }
+
+  function setUnlocked(){
+    document.body.classList.remove('gf-locked');
+    const badge = document.getElementById('gf-unlock-badge');
+    if(badge) badge.style.display = 'none';
+    localStorage.setItem('gf_licensed','1');
+  }
+
+  window.gfActivate = async function(){
+    const key = document.getElementById('gf-key-input').value.trim();
+    const err = document.getElementById('gf-key-error');
+    err.style.display = 'none';
+    if(!key){ err.style.display='block'; err.textContent='Please enter a license key.'; return; }
+    const valid = await isValidKey(key);
+    if(valid){
+      localStorage.setItem('gf_key', key);
+      setUnlocked();
+      document.getElementById('gf-license-modal').style.display='none';
+      // Show success toast if available
+      if(typeof showToast === 'function') showToast('✅ GoldFrame unlocked!');
+    } else {
+      err.style.display='block';
+      err.textContent='Invalid license key. Check your Gumroad receipt.';
+    }
+  };
+
+  // Check on load
+  document.addEventListener('DOMContentLoaded', function(){
+    const savedKey = localStorage.getItem('gf_key');
+    if(savedKey){
+      isValidKey(savedKey).then(valid => {
+        if(valid){ setUnlocked(); }
+        else { document.body.classList.add('gf-locked'); }
+      });
+    } else {
+      document.body.classList.add('gf-locked');
+    }
+  });
+})();
+// ─────────────────────────────────────────────────────────────────
+
+</script>
+</body>
+</html>

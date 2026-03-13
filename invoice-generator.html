@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GoldFrame · Premium Quote Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   GOLDFRAME · PREMIUM QUOTE BUILDER
+   © 2026 — Single-file, zero-dependency
+═══════════════════════════════════════════════ */
+
+:root {
+  --gold-1: #fcf6ba;
+  --gold-2: #e8c84a;
+  --gold-3: #d4af37;
+  --gold-4: #aa771c;
+  --gold-5: #7a5210;
+  --gold-grad: linear-gradient(135deg, var(--gold-5) 0%, var(--gold-1) 38%, var(--gold-3) 62%, var(--gold-5) 100%);
+  --gold-glow: rgba(212,175,55,.22);
+  --bg: #09090d;
+  --bg2: #0e0e16;
+  --glass: rgba(12,12,20,.75);
+  --glass2: rgba(20,20,32,.6);
+  --border: rgba(212,175,55,.28);
+  --border2: rgba(212,175,55,.5);
+  --text: #f0ece0;
+  --muted: #b0aca4;
+  --dim: #5a5650;
+  --red: #ff5a5a;
+  --grn: #4ade80;
+  --r: 14px;
+  --r2: 8px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+body {
+  font-family:'Outfit',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+  line-height:1.6;
+}
+
+/* ── STARFIELD ── */
+#starfield {
+  position:fixed;inset:0;z-index:-1;
+  background:radial-gradient(ellipse at 40% 20%,#16142a 0%,#09090d 65%);
+}
+#starfield canvas{position:absolute;inset:0;width:100%;height:100%}
+
+/* ── LAYOUT ── */
+.wrap {
+  max-width:720px;
+  margin:0 auto;
+  padding:32px 20px 80px;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:32px;
+}
+.brand {
+  font-family:'DM Mono',monospace;
+  font-size:12px;letter-spacing:.25em;
+  background:var(--gold-grad);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  text-transform:uppercase;
+}
+.topbar-actions{display:flex;gap:8px}
+.tb-btn {
+  font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;
+  padding:7px 16px;border-radius:20px;cursor:pointer;
+  letter-spacing:.04em;transition:all .18s;
+}
+.tb-save{background:var(--gold-grad);color:#000;border:none}
+.tb-save:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.tb-load{background:transparent;color:var(--gold-2);border:1.5px solid var(--border2)}
+.tb-load:hover{background:rgba(212,175,55,.1)}
+.tb-new{background:transparent;color:var(--muted);border:1.5px solid var(--dim)}
+.tb-new:hover{border-color:var(--muted);color:var(--text)}
+
+/* ── CARDS ── */
+.card {
+  background:var(--glass);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  padding:28px;
+  margin-bottom:16px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  box-shadow:0 8px 32px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.03),inset 0 1px 0 rgba(255,255,255,.04);
+  transition:border-color .2s;
+}
+.card:focus-within{border-color:var(--border2)}
+
+.card-title {
+  font-family:'DM Mono',monospace;
+  font-size:12px;letter-spacing:.2em;
+  color:var(--gold-3);text-transform:uppercase;
+  margin-bottom:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.card-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+
+/* ── FORM ELEMENTS ── */
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field:last-child{margin-bottom:0}
+label{font-size:12px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase;font-weight:500}
+
+input[type=text],input[type=number],input[type=date],select,textarea {
+  background:rgba(0,0,0,.45);
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px 14px;
+  font-size:14px;font-family:'Outfit',sans-serif;
+  border-radius:var(--r2);
+  width:100%;
+  transition:border-color .15s,box-shadow .15s;
+}
+input:focus,select:focus,textarea:focus{
+  outline:none;
+  border-color:var(--gold-3);
+  box-shadow:0 0 0 3px rgba(212,175,55,.12);
+}
+input::placeholder,textarea::placeholder{color:var(--dim)}
+select option{background:#1a1a26;color:var(--text)}
+textarea{resize:vertical;min-height:80px;line-height:1.5}
+
+/* ── LOGO UPLOAD ── */
+.logo-area {
+  border:1.5px dashed var(--border2);
+  border-radius:var(--r2);
+  padding:20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.logo-area:hover{border-color:var(--gold-2);background:rgba(212,175,55,.04)}
+.logo-area input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.logo-preview{max-height:80px;max-width:200px;object-fit:contain;display:none;margin:0 auto}
+.logo-hint{font-size:12px;color:var(--muted)}
+.logo-icon{font-size:28px;margin-bottom:8px;display:block}
+
+/* ── HEADER SPLIT (logo + business) ── */
+.header-grid{display:grid;grid-template-columns:200px 1fr;gap:20px;align-items:start}
+
+/* ── LINE ITEMS TABLE ── */
+.items-header {
+  display:grid;grid-template-columns:1fr 90px 90px 90px 36px;
+  gap:8px;padding:0 4px 10px;
+  font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;
+  border-bottom:1px solid var(--dim);margin-bottom:8px;
+}
+.item-row {
+  display:grid;grid-template-columns:1fr 90px 90px 90px 36px;
+  gap:8px;align-items:center;padding:6px 4px;
+  border-bottom:1px solid rgba(212,175,55,.07);
+  animation:slideIn .2s ease;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+.item-row input{padding:8px 10px;font-size:13px}
+.item-row input[type=number]{text-align:right}
+.item-amount{
+  font-family:'DM Mono',monospace;font-size:13px;
+  color:var(--gold-2);text-align:right;padding:8px 10px;
+  background:rgba(0,0,0,.3);border:1px solid var(--dim);
+  border-radius:var(--r2);
+}
+.del-btn {
+  background:transparent;border:1px solid var(--dim);color:var(--muted);
+  border-radius:6px;width:36px;height:36px;cursor:pointer;font-size:14px;
+  transition:all .15s;display:flex;align-items:center;justify-content:center;
+}
+.del-btn:hover{border-color:var(--red);color:var(--red);background:rgba(255,90,90,.08)}
+
+.add-item-row {
+  display:grid;grid-template-columns:1fr 90px 90px;gap:8px;
+  margin-top:12px;padding-top:12px;
+  border-top:1px dashed var(--dim);
+}
+.btn-add {
+  background:var(--gold-grad);color:#000;border:none;
+  padding:11px 20px;border-radius:var(--r2);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:.06em;text-transform:uppercase;
+  transition:filter .15s,transform .1s;margin-top:12px;width:100%;
+}
+.btn-add:hover{filter:brightness(1.08);transform:translateY(-1px)}
+
+/* ── TOTALS ── */
+.totals-grid{display:flex;flex-direction:column;gap:0;margin-top:20px}
+.total-row {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid var(--dim);
+  font-size:14px;
+}
+.total-row:last-child{border-bottom:none}
+.total-row.grand {
+  padding-top:16px;font-size:1.6rem;font-weight:700;
+  font-family:'DM Mono',monospace;
+  color:var(--gold-1);
+  border-top:2px solid var(--gold-3);
+  margin-top:4px;
+}
+.total-label{color:var(--muted)}
+.total-val{font-family:'DM Mono',monospace;color:var(--gold-2)}
+.grand .total-val{color:var(--gold-1)}
+
+.tax-inline{display:flex;align-items:center;gap:8px}
+.tax-inline input{width:70px;padding:5px 8px;font-size:13px;text-align:right}
+.disc-inline{display:flex;align-items:center;gap:8px}
+.disc-inline input{width:70px;padding:5px 8px;font-size:13px;text-align:right}
+.disc-type{display:flex;gap:4px}
+.disc-type button{
+  background:transparent;border:1px solid var(--dim);color:var(--muted);
+  padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;transition:all .12s;
+}
+.disc-type button.active{background:var(--gold-grad);color:#000;border-color:transparent;font-weight:700}
+
+/* ── CURRENCY SELECTOR ── */
+.cur-select-wrap{display:flex;align-items:center;gap:10px}
+.cur-flag{font-size:20px}
+
+/* ── QUOTE NUMBER / DATE ── */
+.meta-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* ── STATUS BADGE ── */
+.status-select{
+  background:transparent;border:1.5px solid var(--border2);
+  color:var(--gold-2);padding:6px 12px;border-radius:20px;
+  font-size:12px;font-weight:600;letter-spacing:.06em;
+  cursor:pointer;
+}
+
+/* ── SAVED QUOTES PANEL ── */
+.saved-panel {
+  display:none;position:fixed;inset:0;z-index:100;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;
+}
+.saved-panel.open{display:flex}
+.saved-box{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:var(--r);padding:28px;width:500px;max-width:90vw;
+  max-height:80vh;overflow-y:auto;
+}
+.saved-box h2{
+  font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;
+  color:var(--gold-3);text-transform:uppercase;margin-bottom:20px;
+}
+.saved-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 16px;border:1px solid var(--border);border-radius:var(--r2);
+  margin-bottom:8px;cursor:pointer;transition:all .15s;
+}
+.saved-item:hover{border-color:var(--gold-3);background:rgba(212,175,55,.05)}
+.saved-item-meta{font-size:12px;color:var(--muted);margin-top:3px}
+.saved-item-actions{display:flex;gap:8px}
+.si-load{
+  background:var(--gold-grad);color:#000;border:none;
+  padding:5px 14px;border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;
+}
+.si-del{
+  background:transparent;border:1px solid var(--dim);color:var(--muted);
+  padding:5px 10px;border-radius:20px;cursor:pointer;font-size:12px;
+  transition:all .12s;
+}
+.si-del:hover{border-color:var(--red);color:var(--red)}
+.close-panel{
+  float:right;background:transparent;border:none;color:var(--muted);
+  font-size:20px;cursor:pointer;margin-top:-8px;
+}
+.close-panel:hover{color:var(--text)}
+.empty-saved{text-align:center;color:var(--muted);padding:32px;font-size:14px}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--glass);border:1px solid var(--border2);
+  padding:12px 24px;border-radius:40px;font-size:14px;font-weight:500;
+  backdrop-filter:blur(20px);z-index:200;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── PDF BUTTON ── */
+.btn-pdf {
+  width:100%;padding:16px;border-radius:var(--r2);
+  background:transparent;border:1.5px solid var(--gold-3);
+  color:var(--gold-1);cursor:pointer;font-family:'Outfit',sans-serif;
+  font-size:14px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  transition:all .18s;margin-top:8px;
+}
+.btn-pdf:hover{background:rgba(212,175,55,.1);border-color:var(--gold-2);transform:translateY(-1px)}
+
+/* ── PRINT STYLES ── */
+@media print {
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  body { background: #fff !important; color: #1a1a1a !important; }
+  #starfield,.no-print,.topbar,.del-btn,.add-item-row,.btn-pdf,.btn-add,.tb-btn,.saved-panel,.toast { display: none !important; }
+  .wrap { max-width: 100% !important; padding: 20px !important; }
+  h1,.brand { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; background: none !important; }
+  .header-grid { border-bottom: 3px solid #d4af37 !important; padding-bottom: 20px !important; margin-bottom: 20px !important; }
+  .card { background: #fff !important; border: none !important; border-left: 3px solid #d4af37 !important; box-shadow: none !important; backdrop-filter: none !important; break-inside: avoid; margin-bottom: 16px !important; padding: 16px 20px !important; }
+  .card-title { color: #d4af37 !important; font-size: 11px !important; letter-spacing: 2px !important; text-transform: uppercase !important; }
+  input,select,textarea { border: none !important; border-bottom: 1px solid #e5e5e5 !important; background: transparent !important; color: #1a1a1a !important; padding: 2px 0 !important; }
+  label { color: #888 !important; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 1px !important; }
+  .items-header { border-bottom: 2px solid #d4af37 !important; color: #888 !important; font-size: 11px !important; text-transform: uppercase !important; }
+  .item-row { border-bottom: 1px solid #f0f0f0 !important; }
+  .item-amount,.total-val { color: #1a1a1a !important; font-weight: 600 !important; }
+  .total-label { color: #888 !important; }
+  .total-row.grand { border-top: 2px solid #d4af37 !important; }
+  .grand .total-val { color: #d4af37 !important; font-size: 20px !important; font-weight: 700 !important; }
+  .grand .total-label { color: #1a1a1a !important; font-weight: 600 !important; }
+  .logo-area { border: none !important; padding: 0 !important; }
+  .disc-type,.tax-inline input,.disc-inline input { display: none !important; }
+}
+
+@media(max-width:580px){
+  .header-grid{grid-template-columns:1fr}
+  .meta-grid{grid-template-columns:1fr 1fr}
+  .items-header,.item-row{grid-template-columns:1fr 80px 80px 36px}
+  .items-header .h-qty,.item-row .qty-col{display:none}
+  .row,.row3{grid-template-columns:1fr}
+}
+
+@media print {
+  body.gf-locked::before {
+    content: "GoldFrame Free  .  goldframe.gumroad.com  .  GoldFrame Free  .  goldframe.gumroad.com";
+    position:fixed;top:38%;left:-20%;width:140%;text-align:center;font-size:22px;font-weight:700;
+    color:rgba(180,180,180,0.18)!important;font-family:Arial,sans-serif;letter-spacing:2px;
+    transform:rotate(-35deg);z-index:99999;pointer-events:none;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;white-space:nowrap;text-transform:uppercase;
+  }
+  body.gf-locked::after {
+    content: "GoldFrame Free  .  goldframe.gumroad.com  .  GoldFrame Free  .  goldframe.gumroad.com";
+    position:fixed;top:65%;left:-20%;width:140%;text-align:center;font-size:22px;font-weight:700;
+    color:rgba(180,180,180,0.18)!important;font-family:Arial,sans-serif;letter-spacing:2px;
+    transform:rotate(-35deg);z-index:99999;pointer-events:none;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;white-space:nowrap;text-transform:uppercase;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="starfield"><canvas id="sc"></canvas></div>
+
+<!-- SAVED QUOTES PANEL -->
+<div class="saved-panel" id="savedPanel">
+  <div class="saved-box">
+    <button class="close-panel" onclick="closeSaved()">✕</button>
+    <h2>📁 Saved Quotes</h2>
+    <div id="savedList"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<div class="wrap">
+
+  <!-- TOP BAR -->
+  <div class="topbar no-print">
+    <div class="brand">GoldFrame · Quote Builder</div>
+    <div class="topbar-actions">
+      <button class="tb-btn tb-new" onclick="newQuote()">＋ New</button>
+      <button class="tb-btn tb-load" onclick="openSaved()">📁 Load</button>
+      <button class="tb-btn tb-save" onclick="saveQuote()">💾 Save</button>
+    </div>
+  </div>
+
+  <!-- BUSINESS + LOGO -->
+  <div class="card">
+    <div class="card-title">Your Business</div>
+    <div class="header-grid">
+      <div>
+        <label style="margin-bottom:8px;display:block">Logo</label>
+        <div class="logo-area" id="logoArea" onclick="document.getElementById('logoInput').click()">
+          <input type="file" id="logoInput" accept="image/*" style="display:none" onchange="uploadLogo(event)">
+          <img id="logoPreview" class="logo-preview" alt="Logo">
+          <div id="logoHint">
+            <span class="logo-icon">🖼️</span>
+            <div class="logo-hint">Click to upload logo<br><small>PNG, JPG, SVG</small></div>
+          </div>
+        </div>
+        <button class="no-print" onclick="removeLogo()" id="removeLogoBtn" style="display:none;margin-top:8px;background:transparent;border:1px solid var(--dim);color:var(--muted);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:12px;width:100%">✕ Remove</button>
+      </div>
+      <div>
+        <div class="field">
+          <label>Business Name</label>
+          <input type="text" id="bizName" placeholder="Your Company Ltd.">
+        </div>
+        <div class="field">
+          <label>Address</label>
+          <input type="text" id="bizAddr" placeholder="123 Main St, City">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>Email</label>
+            <input type="text" id="bizEmail" placeholder="you@company.com">
+          </div>
+          <div class="field">
+            <label>Phone</label>
+            <input type="text" id="bizPhone" placeholder="+1 555 000 0000">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUOTE METADATA -->
+  <div class="card">
+    <div class="card-title">Quote Details</div>
+    <div class="meta-grid">
+      <div class="field">
+        <label>Quote Number</label>
+        <input type="text" id="quoteNum" placeholder="QT-0001">
+      </div>
+      <div class="field">
+        <label>Issue Date</label>
+        <input type="date" id="quoteDate">
+      </div>
+      <div class="field">
+        <label>Valid Until</label>
+        <input type="date" id="quoteExpiry">
+      </div>
+    </div>
+    <div class="row" style="margin-top:4px">
+      <div class="field">
+        <label>Currency</label>
+        <div class="cur-select-wrap">
+          <span class="cur-flag" id="curFlag">🇺🇸</span>
+          <select id="currencySel" onchange="updateCurrency()">
+            <option value="USD|$|🇺🇸">USD — US Dollar ($)</option>
+            <option value="EUR|€|🇪🇺">EUR — Euro (€)</option>
+            <option value="GBP|£|🇬🇧">GBP — British Pound (£)</option>
+            <option value="INR|₹|🇮🇳">INR — Indian Rupee (₹)</option>
+            <option value="AED|AED|🇦🇪">AED — UAE Dirham</option>
+            <option value="AUD|A$|🇦🇺">AUD — Australian Dollar</option>
+            <option value="CAD|C$|🇨🇦">CAD — Canadian Dollar</option>
+            <option value="SGD|S$|🇸🇬">SGD — Singapore Dollar</option>
+            <option value="JPY|¥|🇯🇵">JPY — Japanese Yen (¥)</option>
+            <option value="CHF|CHF|🇨🇭">CHF — Swiss Franc</option>
+            <option value="MYR|RM|🇲🇾">MYR — Malaysian Ringgit</option>
+            <option value="SAR|SR|🇸🇦">SAR — Saudi Riyal</option>
+            <option value="QAR|QR|🇶🇦">QAR — Qatari Riyal</option>
+            <option value="ZAR|R|🇿🇦">ZAR — South African Rand</option>
+            <option value="BRL|R$|🇧🇷">BRL — Brazilian Real</option>
+            <option value="MXN|MX$|🇲🇽">MXN — Mexican Peso</option>
+            <option value="PHP|₱|🇵🇭">PHP — Philippine Peso</option>
+            <option value="IDR|Rp|🇮🇩">IDR — Indonesian Rupiah</option>
+            <option value="PKR|₨|🇵🇰">PKR — Pakistani Rupee</option>
+            <option value="NGN|₦|🇳🇬">NGN — Nigerian Naira</option>
+            <option value="KES|KSh|🇰🇪">KES — Kenyan Shilling</option>
+            <option value="NZD|NZ$|🇳🇿">NZD — New Zealand Dollar</option>
+            <option value="HKD|HK$|🇭🇰">HKD — Hong Kong Dollar</option>
+            <option value="SEK|kr|🇸🇪">SEK — Swedish Krona</option>
+            <option value="NOK|kr|🇳🇴">NOK — Norwegian Krone</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Status</label>
+        <select class="status-select" id="quoteStatus">
+          <option value="draft">📝 Draft</option>
+          <option value="sent">📤 Sent</option>
+          <option value="accepted">✅ Accepted</option>
+          <option value="declined">❌ Declined</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CLIENT DETAILS -->
+  <div class="card">
+    <div class="card-title">Bill To</div>
+    <div class="row">
+      <div class="field">
+        <label>Client Name</label>
+        <input type="text" id="clientName" placeholder="Client Name">
+      </div>
+      <div class="field">
+        <label>Company</label>
+        <input type="text" id="clientCompany" placeholder="Client Company">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>Email</label>
+        <input type="text" id="clientEmail" placeholder="client@email.com">
+      </div>
+      <div class="field">
+        <label>Phone</label>
+        <input type="text" id="clientPhone" placeholder="+1 555 000 0000">
+      </div>
+    </div>
+    <div class="field">
+      <label>Address</label>
+      <input type="text" id="clientAddr" placeholder="Client address">
+    </div>
+  </div>
+
+  <!-- LINE ITEMS -->
+  <div class="card">
+    <div class="card-title">Line Items</div>
+    <div class="items-header">
+      <span>Description</span>
+      <span class="h-qty" style="text-align:right">Qty</span>
+      <span style="text-align:right">Rate</span>
+      <span style="text-align:right">Amount</span>
+      <span></span>
+    </div>
+    <div id="itemsList"></div>
+    <div class="add-item-row no-print">
+      <input type="text" id="newDesc" placeholder="Service or product description..." onkeydown="if(event.key==='Enter')addItem()">
+      <input type="number" id="newQty" placeholder="Qty" value="1" min="0" step="any" style="text-align:right">
+      <input type="number" id="newRate" placeholder="Rate" min="0" step="any" style="text-align:right" onkeydown="if(event.key==='Enter')addItem()">
+    </div>
+    <button class="btn-add no-print" onclick="addItem()">+ Add Line Item</button>
+
+    <!-- TOTALS -->
+    <div class="totals-grid">
+      <div class="total-row">
+        <span class="total-label">Subtotal</span>
+        <span class="total-val" id="tSubtotal">$0.00</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">
+          <span class="disc-inline">
+            Discount
+            <div class="disc-type no-print">
+              <button id="discPctBtn" class="active" onclick="setDiscType('pct')">%</button>
+              <button id="discFlatBtn" onclick="setDiscType('flat')">Flat</button>
+            </div>
+            <input type="number" id="discVal" value="0" min="0" step="any" onchange="renderTotals()" onkeyup="renderTotals()" style="width:70px;padding:5px 8px;font-size:13px;text-align:right">
+          </span>
+        </span>
+        <span class="total-val" id="tDiscount">-$0.00</span>
+      </div>
+      <div class="total-row">
+        <span class="total-label">
+          <span class="tax-inline">
+            Tax
+            <input type="number" id="taxRate" value="0" min="0" step="any" onchange="renderTotals()" onkeyup="renderTotals()" class="no-print" style="width:70px;padding:5px 8px;font-size:13px;text-align:right">
+            <span class="no-print" style="color:var(--muted);font-size:12px">%</span>
+          </span>
+        </span>
+        <span class="total-val" id="tTax">$0.00</span>
+      </div>
+      <div class="total-row grand">
+        <span>Total</span>
+        <span class="total-val" id="tTotal">$0.00</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES & TERMS -->
+  <div class="card">
+    <div class="card-title">Notes & Terms</div>
+    <div class="field">
+      <label>Notes (visible to client)</label>
+      <textarea id="notes" placeholder="Thank you for your business! Payment is due within 30 days."></textarea>
+    </div>
+    <div class="field">
+      <label>Terms & Conditions</label>
+      <textarea id="terms" placeholder="All prices are in the currency stated above. Late payments incur a 1.5% monthly fee."></textarea>
+    </div>
+  </div>
+
+  <!-- PDF -->
+  <button class="btn-pdf no-print" onclick="downloadPDF()">📥 Download PDF Quote</button>
+
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════════════════════════════════════
+   STARFIELD
+══════════════════════════════════════════════ */
+(function(){
+  const c = document.getElementById('sc');
+  const ctx = c.getContext('2d');
+  let W,H,stars=[],rafId=null,t=0;
+  function resize(){ W=c.width=window.innerWidth; H=c.height=window.innerHeight; }
+  function init(){
+    stars=[];
+    for(let i=0;i<Math.floor(W*H/4000);i++)
+      stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.1+.2,o:Math.random()*.5+.1,s:Math.random()*.012+.004,ph:Math.random()*Math.PI*2});
+  }
+  function draw(){
+    if(document.hidden){rafId=null;return;}
+    ctx.clearRect(0,0,W,H); t+=.01;
+    stars.forEach(s=>{
+      const op=s.o*(.5+.5*Math.sin(t*s.s*60+s.ph));
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,240,180,${op})`;ctx.fill();
+    });
+    rafId=requestAnimationFrame(draw);
+  }
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!rafId)draw();});
+  window.addEventListener('resize',()=>{resize();init();});
+  resize();init();draw();
+})();
+
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
+let items = [];
+let curSymbol = '$';
+let discType = 'pct'; // 'pct' or 'flat'
+let logoData = null;
+
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
+(function init(){
+  // Default dates
+  const today = new Date();
+  const expiry = new Date(today);
+  expiry.setDate(expiry.getDate()+30);
+  document.getElementById('quoteDate').value = fmtDate(today);
+  document.getElementById('quoteExpiry').value = fmtDate(expiry);
+  document.getElementById('quoteNum').value = 'QT-' + String(Math.floor(Math.random()*9000)+1000);
+  renderItems();
+  renderTotals();
+})();
+
+function fmtDate(d){
+  return d.toISOString().split('T')[0];
+}
+
+/* ══════════════════════════════════════════════
+   CURRENCY
+══════════════════════════════════════════════ */
+function updateCurrency(){
+  const parts = document.getElementById('currencySel').value.split('|');
+  curSymbol = parts[1] || '$';
+  document.getElementById('curFlag').textContent = parts[2] || '💱';
+  renderTotals();
+  renderItems();
+}
+
+/* ══════════════════════════════════════════════
+   LOGO
+══════════════════════════════════════════════ */
+function uploadLogo(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    logoData = ev.target.result;
+    const preview = document.getElementById('logoPreview');
+    const hint = document.getElementById('logoHint');
+    preview.src = logoData;
+    preview.style.display = 'block';
+    hint.style.display = 'none';
+    document.getElementById('removeLogoBtn').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeLogo(){
+  logoData = null;
+  document.getElementById('logoPreview').style.display='none';
+  document.getElementById('logoHint').style.display='block';
+  document.getElementById('removeLogoBtn').style.display='none';
+  document.getElementById('logoInput').value='';
+}
+
+/* ══════════════════════════════════════════════
+   LINE ITEMS
+══════════════════════════════════════════════ */
+function addItem(){
+  const desc = document.getElementById('newDesc').value.trim();
+  const qty  = parseFloat(document.getElementById('newQty').value) || 1;
+  const rate = parseFloat(document.getElementById('newRate').value);
+  if(!desc || isNaN(rate) || rate < 0){
+    toast('Please enter a description and valid rate.','⚠️'); return;
+  }
+  items.push({id:Date.now(), desc, qty, rate});
+  document.getElementById('newDesc').value='';
+  document.getElementById('newRate').value='';
+  document.getElementById('newQty').value='1';
+  document.getElementById('newDesc').focus();
+  renderItems();
+  renderTotals();
+}
+
+function removeItem(id){
+  items = items.filter(i=>i.id!==id);
+  renderItems();
+  renderTotals();
+}
+
+function updateItemField(id, field, val){
+  const item = items.find(i=>i.id===id);
+  if(!item) return;
+  item[field] = field==='desc' ? val : (parseFloat(val)||0);
+  renderTotals();
+  // update amount cell
+  const row = document.querySelector(`[data-id="${id}"]`);
+  if(row) row.querySelector('.item-amount').textContent = curSymbol + (item.qty*item.rate).toFixed(2);
+}
+
+function renderItems(){
+  const list = document.getElementById('itemsList');
+  if(items.length===0){ list.innerHTML=''; return; }
+  list.innerHTML = items.map(i=>`
+    <div class="item-row" data-id="${i.id}">
+      <input type="text" value="${escHtml(i.desc)}" placeholder="Description"
+        onchange="updateItemField(${i.id},'desc',this.value)"
+        oninput="updateItemField(${i.id},'desc',this.value)">
+      <input type="number" class="qty-col" value="${i.qty}" min="0" step="any" style="text-align:right"
+        onchange="updateItemField(${i.id},'qty',this.value)" oninput="updateItemField(${i.id},'qty',this.value)">
+      <input type="number" value="${i.rate}" min="0" step="any" style="text-align:right"
+        onchange="updateItemField(${i.id},'rate',this.value)" oninput="updateItemField(${i.id},'rate',this.value)">
+      <div class="item-amount">${curSymbol}${(i.qty*i.rate).toFixed(2)}</div>
+      <button class="del-btn no-print" onclick="removeItem(${i.id})">✕</button>
+    </div>
+  `).join('');
+}
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ══════════════════════════════════════════════
+   TOTALS
+══════════════════════════════════════════════ */
+function setDiscType(type){
+  discType = type;
+  document.getElementById('discPctBtn').className = type==='pct' ? 'active' : '';
+  document.getElementById('discFlatBtn').className = type==='flat' ? 'active' : '';
+  renderTotals();
+}
+
+function renderTotals(){
+  const subtotal = items.reduce((s,i)=>s+i.qty*i.rate, 0);
+  const discVal  = parseFloat(document.getElementById('discVal').value)||0;
+  const taxRate  = parseFloat(document.getElementById('taxRate').value)||0;
+  const discount = discType==='pct' ? subtotal*(discVal/100) : Math.min(discVal,subtotal);
+  const taxable  = subtotal - discount;
+  const tax      = taxable*(taxRate/100);
+  const total    = taxable + tax;
+  const s = curSymbol;
+  document.getElementById('tSubtotal').textContent = s+subtotal.toFixed(2);
+  document.getElementById('tDiscount').textContent = '-'+s+discount.toFixed(2);
+  document.getElementById('tTax').textContent      = s+tax.toFixed(2);
+  document.getElementById('tTotal').textContent    = s+total.toFixed(2);
+}
+
+/* ══════════════════════════════════════════════
+   SAVE / LOAD
+══════════════════════════════════════════════ */
+function getState(){
+  return {
+    bizName:    document.getElementById('bizName').value,
+    bizAddr:    document.getElementById('bizAddr').value,
+    bizEmail:   document.getElementById('bizEmail').value,
+    bizPhone:   document.getElementById('bizPhone').value,
+    quoteNum:   document.getElementById('quoteNum').value,
+    quoteDate:  document.getElementById('quoteDate').value,
+    quoteExpiry:document.getElementById('quoteExpiry').value,
+    quoteStatus:document.getElementById('quoteStatus').value,
+    currency:   document.getElementById('currencySel').value,
+    clientName: document.getElementById('clientName').value,
+    clientCompany:document.getElementById('clientCompany').value,
+    clientEmail:document.getElementById('clientEmail').value,
+    clientPhone:document.getElementById('clientPhone').value,
+    clientAddr: document.getElementById('clientAddr').value,
+    items:      items,
+    discVal:    document.getElementById('discVal').value,
+    discType:   discType,
+    taxRate:    document.getElementById('taxRate').value,
+    notes:      document.getElementById('notes').value,
+    terms:      document.getElementById('terms').value,
+    logo:       logoData,
+    curSymbol:  curSymbol,
+    savedAt:    new Date().toLocaleString(),
+    total:      document.getElementById('tTotal').textContent,
+  };
+}
+
+function setState(s){
+  document.getElementById('bizName').value    = s.bizName||'';
+  document.getElementById('bizAddr').value    = s.bizAddr||'';
+  document.getElementById('bizEmail').value   = s.bizEmail||'';
+  document.getElementById('bizPhone').value   = s.bizPhone||'';
+  document.getElementById('quoteNum').value   = s.quoteNum||'';
+  document.getElementById('quoteDate').value  = s.quoteDate||'';
+  document.getElementById('quoteExpiry').value= s.quoteExpiry||'';
+  document.getElementById('quoteStatus').value= s.quoteStatus||'draft';
+  /* match currency by code prefix so emoji encoding never breaks it */
+  (function(){
+    const sel = document.getElementById('currencySel');
+    const code = ((s.currency||'USD').split('|')[0]).toUpperCase();
+    let matched = false;
+    for(const opt of sel.options){ if(opt.value.startsWith(code+'|')){ sel.value=opt.value; matched=true; break; } }
+    if(!matched) sel.selectedIndex = 0;
+  })();
+  document.getElementById('clientName').value = s.clientName||'';
+  document.getElementById('clientCompany').value=s.clientCompany||'';
+  document.getElementById('clientEmail').value= s.clientEmail||'';
+  document.getElementById('clientPhone').value= s.clientPhone||'';
+  document.getElementById('clientAddr').value = s.clientAddr||'';
+  document.getElementById('discVal').value    = s.discVal||'0';
+  document.getElementById('taxRate').value    = s.taxRate||'0';
+  document.getElementById('notes').value      = s.notes||'';
+  document.getElementById('terms').value      = s.terms||'';
+  items = s.items||[];
+  curSymbol = s.curSymbol||'$';
+  discType = s.discType||'pct';
+  document.getElementById('discPctBtn').className = discType==='pct'?'active':'';
+  document.getElementById('discFlatBtn').className = discType==='flat'?'active':'';
+  updateCurrency();
+  if(s.logo){
+    logoData=s.logo;
+    const preview=document.getElementById('logoPreview');
+    preview.src=s.logo;preview.style.display='block';
+    document.getElementById('logoHint').style.display='none';
+    document.getElementById('removeLogoBtn').style.display='block';
+  } else { removeLogo(); }
+  renderItems();
+  renderTotals();
+}
+
+function saveQuote(){
+  const state = getState();
+  const key = 'gf_' + (state.quoteNum||Date.now());
+  try{
+    localStorage.setItem(key, JSON.stringify(state));
+    toast('Quote saved! 💾','');
+  }catch(e){ toast('Could not save — storage full','⚠️'); }
+}
+
+function getSaved(){
+  const keys = Object.keys(localStorage).filter(k=>k.startsWith('gf_'));
+  return keys.map(k=>({key:k, data:JSON.parse(localStorage.getItem(k))}))
+             .sort((a,b)=>new Date(b.data.savedAt)-new Date(a.data.savedAt));
+}
+
+function openSaved(){
+  const saved = getSaved();
+  const list = document.getElementById('savedList');
+  if(saved.length===0){
+    list.innerHTML='<div class="empty-saved">No saved quotes yet.<br>Fill out a quote and hit 💾 Save.</div>';
+  } else {
+    list.innerHTML = saved.map(({key,data})=>`
+      <div class="saved-item">
+        <div>
+          <div style="font-weight:600">${escHtml(data.quoteNum||'Untitled')} — ${escHtml(data.clientName||'No client')}</div>
+          <div class="saved-item-meta">${data.total} · ${data.savedAt}</div>
+        </div>
+        <div class="saved-item-actions">
+          <button class="si-load" onclick="loadQuote('${key}')">Load</button>
+          <button class="si-del" onclick="deleteSaved('${key}')">✕</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  document.getElementById('savedPanel').classList.add('open');
+}
+
+function closeSaved(){ document.getElementById('savedPanel').classList.remove('open'); }
+
+function loadQuote(key){
+  const data = JSON.parse(localStorage.getItem(key));
+  if(data){ setState(data); closeSaved(); toast('Quote loaded ✓',''); }
+}
+
+function deleteSaved(key){
+  localStorage.removeItem(key);
+  openSaved();
+  toast('Deleted','');
+}
+
+function newQuote(){
+  if(!confirm('Start a new quote? Unsaved changes will be lost.')) return;
+  items=[];logoData=null;
+  document.querySelectorAll('input[type=text],input[type=number],textarea').forEach(el=>el.value='');
+  removeLogo();
+  document.getElementById('taxRate').value='0';
+  document.getElementById('discVal').value='0';
+  document.getElementById('notes').value='';
+  document.getElementById('terms').value='';
+  const today=new Date(), expiry=new Date(today);
+  expiry.setDate(expiry.getDate()+30);
+  document.getElementById('quoteDate').value=fmtDate(today);
+  document.getElementById('quoteExpiry').value=fmtDate(expiry);
+  document.getElementById('quoteNum').value='QT-'+String(Math.floor(Math.random()*9000)+1000);
+  curSymbol='$';document.getElementById('currencySel').value='USD|$|🇺🇸';
+  document.getElementById('curFlag').textContent='🇺🇸';
+  renderItems();renderTotals();
+}
+
+/* ══════════════════════════════════════════════
+   PDF EXPORT
+══════════════════════════════════════════════ */
+function downloadPDF(){
+  if(items.length===0){ toast('Add at least one line item first','⚠️'); return; }
+  window.print();
+}
+
+// Print: swap tax input → static text
+window.matchMedia('print').addEventListener('change', mql=>{
+  const taxRate = parseFloat(document.getElementById('taxRate').value)||0;
+  const discVal = parseFloat(document.getElementById('discVal').value)||0;
+  if(mql.matches){
+    document.getElementById('taxRate').setAttribute('data-print','1');
+    document.getElementById('discVal').setAttribute('data-print','1');
+  }
+});
+
+/* ══════════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════════ */
+let toastTimer;
+function toast(msg, icon){
+  const el = document.getElementById('toast');
+  el.textContent = (icon?icon+' ':'')+msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+// Close saved panel on backdrop click
+document.getElementById('savedPanel').addEventListener('click', function(e){
+  if(e.target===this) closeSaved();
+});
+</script>
+
+<div id="gf-license-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;align-items:center;justify-content:center;">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.4);border-radius:16px;padding:36px;max-width:420px;width:90%;text-align:center;font-family:'Outfit',sans-serif;">
+    <div style="font-size:28px;margin-bottom:8px;">&#128273;</div>
+    <h3 style="color:#d4af37;font-size:18px;margin-bottom:8px;">Unlock GoldFrame</h3>
+    <p style="color:#b0aca4;font-size:13px;margin-bottom:20px;">Enter your license key to remove the watermark from exports.</p>
+    <input id="gf-key-input" type="text" placeholder="Enter your Gumroad license key" style="width:100%;padding:12px 16px;border-radius:8px;border:1px solid rgba(212,175,55,0.3);background:#09090d;color:#f0ece0;font-size:14px;font-family:monospace;text-align:center;outline:none;margin-bottom:12px;">
+    <div id="gf-key-error" style="color:#ff5a5a;font-size:12px;margin-bottom:12px;display:none;">Invalid key. Check your Gumroad receipt.</div>
+    <button onclick="gfActivate()" style="width:100%;padding:12px;border-radius:8px;background:linear-gradient(135deg,#7a5210,#d4af37);color:#000;font-weight:600;font-size:14px;border:none;cursor:pointer;margin-bottom:10px;">Activate License</button>
+    <button onclick="document.getElementById('gf-license-modal').style.display='none'" style="background:transparent;border:none;color:#b0aca4;font-size:12px;cursor:pointer;text-decoration:underline;">Cancel</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(212,175,55,0.1);">
+      <p style="color:#b0aca4;font-size:11px;">No license? <a href="https://annsri.gumroad.com/l/goldframekit" target="_blank" style="color:#d4af37;">Get GoldFrame Kit</a></p>
+    </div>
+  </div>
+</div>
+<div id="gf-unlock-badge" style="position:fixed;bottom:20px;right:20px;z-index:9999;cursor:pointer;" onclick="document.getElementById('gf-license-modal').style.display='flex'">
+  <div style="background:#0e0e16;border:1px solid rgba(212,175,55,0.35);border-radius:30px;padding:8px 14px;display:flex;align-items:center;gap:6px;">
+    <span style="color:#d4af37;font-size:12px;font-weight:500;font-family:'Outfit',sans-serif;">&#128273; Unlock</span>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  if(localStorage.getItem('gfi_sample_loaded_v2')) return;
+  setTimeout(function(){
+    try{
+      setState({
+        bizName:'Aria Studio',bizAddr:'14 Crescent Lane, Koramangala, Bangalore 560034',
+        bizEmail:'aria@ariastudio.co',bizPhone:'+91 98400 12345',
+        quoteNum:'INV-2026-041',
+        quoteDate:new Date().toISOString().split('T')[0],
+        quoteExpiry:new Date(Date.now()+30*86400000).toISOString().split('T')[0],
+        currency:'INR',
+        quoteStatus:'sent',clientName:'Rohan Mehta',clientCompany:'Nexus Ventures Pvt. Ltd.',
+        clientEmail:'rohan@nexusventures.in',clientPhone:'+91 97300 55512',
+        clientAddr:'801 Prestige Tower, MG Road, Pune 411001',
+        discVal:'10',discType:'pct',taxRate:'18',
+        notes:'All deliverables include 2 rounds of revisions. Final files in AI, PNG and PDF formats.',
+        terms:'50% advance before kickoff. Remaining 50% within 7 days of final delivery.',
+        items:[
+          {id:1,desc:'Brand Identity Package (Logo + Style Guide)',qty:1,rate:45000,amount:45000},
+          {id:2,desc:'Website UI Design - 8 Pages (Figma)',qty:1,rate:38000,amount:38000},
+          {id:3,desc:'Social Media Templates (12 posts)',qty:1,rate:12000,amount:12000},
+          {id:4,desc:'Brand Collateral (Business Card, Letterhead)',qty:1,rate:8000,amount:8000}
+        ]
+      });
+      localStorage.setItem('gfi_sample_loaded_v2','1');
+    }catch(e){console.log('Sample data:',e);}
+  },150);
+});
+(function(){
+  const P="goldframekit";
+  async function valid(k){
+    k=k.trim();if(!k)return false;
+    if(localStorage.getItem('gf_verified_key')===k)return true;
+    try{
+      const r=await fetch("https://api.gumroad.com/v2/licenses/verify",{
+        method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},
+        body:"product_permalink="+P+"&license_key="+encodeURIComponent(k)+"&increment_uses_count=false"
+      });
+      const d=await r.json();
+      if(d.success){localStorage.setItem('gf_verified_key',k);return true;}
+      return false;
+    }catch(e){return localStorage.getItem('gf_licensed')==='1';}
+  }
+  function unlock(){
+    document.body.classList.remove('gf-locked');
+    const b=document.getElementById('gf-unlock-badge');
+    if(b)b.style.display='none';
+    localStorage.setItem('gf_licensed','1');
+  }
+  window.gfActivate=async function(){
+    const k=document.getElementById('gf-key-input').value;
+    const e=document.getElementById('gf-key-error');
+    e.style.display='none';
+    if(!k.trim()){e.style.display='block';e.textContent='Please enter a license key.';return;}
+    if(await valid(k)){
+      localStorage.setItem('gf_key',k);unlock();
+      document.getElementById('gf-license-modal').style.display='none';
+      if(typeof showToast==='function')showToast('GoldFrame unlocked!');
+    }else{e.style.display='block';e.textContent='Invalid key. Check your Gumroad receipt.';}
+  };
+  document.addEventListener('DOMContentLoaded',function(){
+    const k=localStorage.getItem('gf_key');
+    if(k){valid(k).then(v=>{if(v)unlock();else document.body.classList.add('gf-locked');});}
+    else{document.body.classList.add('gf-locked');}
+  });
+})();
+</script>
+</body>
+</html>
